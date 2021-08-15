@@ -1,25 +1,29 @@
-export const createModel = () => {
+export const createFilmModel = () => {
   let films = [];
 
   const addNewFilm = ({
     title,
     rating,
-    year,
+    date,
     duration,
-    genre,
+    genres,
     poster,
     description,
     numberOfComments,
+    country,
+    actors,
   }) => (
     films.push({
       title,
       rating,
-      year,
+      date,
       duration,
-      genre,
+      genres,
       poster,
       description,
       numberOfComments,
+      country,
+      actors,
     })
   );
 

@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const createElement = (template) => {
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
@@ -13,13 +15,16 @@ FilmCardView.prototype.getTemplate = function () {
   const {
     title,
     rating,
-    year,
+    date,
     duration,
-    genre,
+    genres,
     poster,
     description,
     numberOfComments,
   } = this._film;
+
+  const year = dayjs(date).format('YYYY');
+
   return `
     <article class="film-card">
       <h3 class="film-card__title">${title}</h3>
@@ -27,7 +32,7 @@ FilmCardView.prototype.getTemplate = function () {
       <p class="film-card__info">
         <span class="film-card__year">${year}</span>
         <span class="film-card__duration">${duration}</span>
-        <span class="film-card__genre">${genre}</span>
+        <span class="film-card__genre">${genres[0]}</span>
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${description}</p>
