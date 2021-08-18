@@ -1,10 +1,5 @@
 import dayjs from 'dayjs';
-
-const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-  return newElement.firstElementChild;
-};
+import {createElement} from '../util.js';
 
 const FilmCardView = function (film) {
   this._element = null;

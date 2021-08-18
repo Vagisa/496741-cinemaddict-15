@@ -1,6 +1,10 @@
-import {getRandomArrayElement, getArraySpecifiedLength} from '../models/return-random-array.js';
-import {returnRandomNumber, returnRandomFloat} from '../models/return-random-number.js';
-import {generateDate} from '../models/generate-date.js';
+import {
+  getRandomArrayElement,
+  getArraySpecifiedLength,
+  getRandomInteger,
+  getRandomFloat,
+  generateDate
+} from '../util.js';
 
 const filmTitles = [
   'The Dance of Life',
@@ -90,18 +94,18 @@ const generateFilm = () => {
 
   return {
     title: movieTitle,
-    rating: returnRandomFloat(0, 10, 1),
-    date: returnRandomNumber(1896, 2021),
-    duration: `${returnRandomNumber(0, 4)}h ${returnRandomNumber(0, 59)}m`,
+    rating: getRandomFloat(0, 10, 1),
+    date: getRandomInteger(1896, 2021),
+    duration: `${getRandomInteger(0, 4)}h ${getRandomInteger(0, 59)}m`,
     genres: getArraySpecifiedLength(filmGenres, 1, filmGenres.length),
     poster: `./images/posters/${pikUpPosterForMovie(movieTitle)}`,
     description: getArraySpecifiedLength(filmDescriptions, 1, 5).join(' '),
-    numberOfComments: returnRandomNumber(0, 500),
+    numberOfComments: getRandomInteger(0, 500),
     country: getRandomArrayElement(filmCountrys),
     actors: getArraySpecifiedLength(filmActors, 1, filmActors.length).join(' '),
-    isWatchlist: Boolean(returnRandomNumber(0, 1)),
-    isHistory: Boolean(returnRandomNumber(0, 1)),
-    isFavorites: Boolean(returnRandomNumber(0, 1)),
+    isWatchlist: Boolean(getRandomInteger(0, 1)),
+    isHistory: Boolean(getRandomInteger(0, 1)),
+    isFavorites: Boolean(getRandomInteger(0, 1)),
   };
 };
 
