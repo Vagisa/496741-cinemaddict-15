@@ -1,13 +1,13 @@
+import dayjs from 'dayjs';
 
-export const filmComment = (comment) => {
-  const {
-    author,
-    commentOnFilm,
-    date,
-    emotion,
-  } = comment;
+export const filmComment = ({
+  author,
+  commentOnFilm,
+  date,
+  emotion,
+}) => {
 
-  const dueDate = date.format('YYYY/MM/DD HH:MM');
+  const commentDate = dayjs(date).format('YYYY/MM/DD HH:MM');
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -17,7 +17,7 @@ export const filmComment = (comment) => {
       <p class="film-details__comment-text">${commentOnFilm}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${dueDate}</span>
+        <span class="film-details__comment-day">${commentDate}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>

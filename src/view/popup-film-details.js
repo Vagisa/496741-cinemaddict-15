@@ -1,19 +1,18 @@
 import dayjs from 'dayjs';
 
-export const getFilmTemplate = (film) => {
-  const {
-    title,
-    rating,
-    date,
-    duration,
-    genres,
-    poster,
-    description,
-    country,
-    actors,
-  } = film;
+export const getFilmTemplate = ({
+  title,
+  rating,
+  date,
+  duration,
+  genres,
+  poster,
+  description,
+  country,
+  actors,
+}) => {
 
-  const dueDate = dayjs(date).format('D MMMM YYYY');
+  const releaseDate = dayjs(date).format('D MMMM YYYY');
 
   return `<div class="film-details__info-wrap">
     <div class="film-details__poster">
@@ -49,7 +48,7 @@ export const getFilmTemplate = (film) => {
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Release Date</td>
-          <td class="film-details__cell">${dueDate}</td>
+          <td class="film-details__cell">${releaseDate}</td>
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Runtime</td>

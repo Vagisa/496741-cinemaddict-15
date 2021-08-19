@@ -35,7 +35,7 @@ const generateDate = () => {
   const maxDaysGap = DAYS_IN_YEAR * 10;
   const daysGap = getRandomInteger(0, maxDaysGap);
 
-  return dayjs().add(-daysGap, 'day');
+  return dayjs().add(-daysGap, 'day').toISOString();
 };
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];

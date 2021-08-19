@@ -95,12 +95,12 @@ const generateFilm = () => {
   return {
     title: movieTitle,
     rating: getRandomFloat(0, 10, 1),
-    date: getRandomInteger(1896, 2021),
+    date: generateDate(),
     duration: `${getRandomInteger(0, 4)}h ${getRandomInteger(0, 59)}m`,
     genres: getArraySpecifiedLength(filmGenres, 1, filmGenres.length),
     poster: `./images/posters/${pikUpPosterForMovie(movieTitle)}`,
     description: getArraySpecifiedLength(filmDescriptions, 1, 5).join(' '),
-    numberOfComments: getRandomInteger(0, 500),
+    numberOfComments: getRandomInteger(0, 5),
     country: getRandomArrayElement(filmCountrys),
     actors: getArraySpecifiedLength(filmActors, 1, filmActors.length).join(' '),
     isWatchlist: Boolean(getRandomInteger(0, 1)),
@@ -110,7 +110,7 @@ const generateFilm = () => {
 };
 
 const generateComment = () => ({
-  id: '42',
+  id: getRandomInteger(0, 100),
   author: getRandomArrayElement(commentAuthors),
   commentOnFilm: getRandomArrayElement(commentTexts),
   date: generateDate(),
