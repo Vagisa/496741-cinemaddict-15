@@ -3,109 +3,25 @@ import {createMenuTemplate} from './view/site-menu.js';
 import {createSortingTemplate} from './view/sorting.js';
 import {createContentTemplate} from './view/content.js';
 import {createNumberFilmsTemplate} from './view/number-films.js';
-import {renderMovieList} from './models/render-movie-list.js';
-import {createMovieInfoPopup} from './view/movie-info-popup.js';
+import {createMovieInfoPopup} from './view/popup-movie-info.js';
 import {createShowMoreButton} from './view/show-more-button.js';
+import {getFilmTemplate} from './view/popup-film-details';
+import {generateFilm, generateComment} from './mock/film-data.js';
+import {filmDetailsControls} from './view/popup-film-controls';
+import {filmComment} from './view/popup-film-comments.js';
+import {getFilmCardTemplate} from './view/film-card-view.js';
 
-const filmsMajor = [
-  {
-    title: 'The Dance of Life',
-    rating: 8.3,
-    year: 1929,
-    duration: '1h 55m',
-    genre: 'Musical',
-    poster: './images/posters/the-dance-of-life.jpg',
-    description: 'Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), end up together on a cold, rainy night at a tr…',
-    numberOfComments: 5,
-  },
-  {
-    title: 'Sagebrush Trail',
-    rating: 3.2,
-    year: 1933,
-    duration: '54m',
-    genre: 'Western',
-    poster: './images/posters/sagebrush-trail.jpg',
-    description: 'Sentenced for a murder he did not commit, John Brant escapes from prison determined to find the real killer. By chance Brant\'s narrow escap…',
-    numberOfComments: 89,
-  },
-  {
-    title: 'The Man with the Golden Arm',
-    rating: 9.0,
-    year: 1955,
-    duration: '1h 59m',
-    genre: 'Drama',
-    poster: './images/posters/the-man-with-the-golden-arm.jpg',
-    description: 'Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington, Kentucky with a set of drums and a new outlook on…',
-    numberOfComments: 18,
-  },
-  {
-    title: 'Santa Claus Conquers the Martians',
-    rating: 2.3,
-    year: 1964,
-    duration: '1h 21m',
-    genre: 'Comedy',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    description: 'The Martians Momar ("Mom Martian") and Kimar ("King Martian") are worried that their children Girmar ("Girl Martian") and Bomar ("Boy Marti…',
-    numberOfComments: 465,
-  },
-  {
-    title: 'Popeye the Sailor Meets Sindbad the Sailor',
-    rating: 6.3,
-    year: 1936,
-    duration: '16m',
-    genre: 'Cartoon',
-    poster: './images/posters/popeye-meets-sinbad.png',
-    description: 'In this short, Sindbad the Sailor (presumably Bluto playing a "role") proclaims himself, in song, to be the greatest sailor, adventurer and…',
-    numberOfComments: 0,
-  }];
-
-const topRatedFilms = [
-  {
-    title: 'The Man with the Golden Arm',
-    rating: 9.0,
-    year: 1955,
-    duration: '1h 59m',
-    genre: 'Drama',
-    poster: './images/posters/the-man-with-the-golden-arm.jpg',
-    description: 'Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington, Kentucky with a set of drums and a new outlook on…',
-    numberOfComments: 18,
-  },
-  {
-    title: 'The Great Flamarion',
-    rating: 8.9,
-    year: 1945,
-    duration: '1h 18m',
-    genre: 'Mystery',
-    poster: './images/posters/the-great-flamarion.jpg',
-    description: 'The film opens following a murder at a cabaret in Mexico City in 1936, and then presents the events leading up to it in flashback. The Grea…',
-    numberOfComments: 12,
-  }];
-
-const mostCommentedFilms = [
-  {
-    title: 'Santa Claus Conquers the Martians',
-    rating: 2.3,
-    year: 1964,
-    duration: '1h 21m',
-    genre: 'Comedy',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    description: 'The Martians Momar ("Mom Martian") and Kimar ("King Martian") are worried that their children Girmar ("Girl Martian") and Bomar ("Boy Marti…',
-    numberOfComments: 465,
-  },
-  {
-    title: 'Made for Each Other',
-    rating: 5.8,
-    year: 1939,
-    duration: '1h 32m',
-    genre: 'Comedy',
-    poster: './images/posters/made-for-each-other.png',
-    description: 'John Mason (James Stewart) is a young, somewhat timid attorney in New York City. He has been doing his job well, and he has a chance of bei…',
-    numberOfComments: 56,
-  }];
+const NUMBER_ALL_MOVIES = 15;
+const NUMBER_TOP_RATED = 2;
+const NUMBER_MOST_COMMENTED = 2;
+const NUMBER_MOVIES_PER_STEP = 5;
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
+
+const moviesData = new Array(NUMBER_ALL_MOVIES).fill().map(generateFilm);
+const commentsArray = new Array(moviesData[0].numberOfComments).fill().map(() => filmComment(generateComment())).join('');
 
 const bodyElement = document.querySelector('body');
 const siteHeaderElement = document.querySelector('.header');
@@ -114,21 +30,78 @@ const siteFooterElement = document.querySelector('.footer');
 const footerStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 
 
-render(siteHeaderElement, createProfileRatingTemplate(), 'beforeend');
-render(siteMainElement, createMenuTemplate(), 'beforeend');
+render(siteHeaderElement, createProfileRatingTemplate(moviesData), 'beforeend');
+render(siteMainElement, createMenuTemplate(moviesData), 'beforeend');
 render(siteMainElement, createSortingTemplate(), 'beforeend');
 render(siteMainElement, createContentTemplate(), 'beforeend');
-render(footerStatisticsElement, createNumberFilmsTemplate(), 'beforeend');
-render(bodyElement, createMovieInfoPopup(), 'beforeend');
+render(footerStatisticsElement, createNumberFilmsTemplate(moviesData), 'beforeend');
+render(bodyElement, createMovieInfoPopup(moviesData[0]), 'beforeend');
 
-const filmListElement = siteMainElement.querySelector('.films-list');
-render(filmListElement, createShowMoreButton(), 'beforeend');
+const mainNavigationElement = document.querySelectorAll('.main-navigation__item');
+mainNavigationElement.forEach((element) => {
+  element.addEventListener('click', () => {
+    mainNavigationElement.forEach((item) => {
+      item.classList.remove('main-navigation__item--active');
+    });
+    element.classList.add('main-navigation__item--active');
+  });
+});
+
+const sortButtonElement = document.querySelectorAll('.sort__button');
+sortButtonElement.forEach((element) => {
+  element.addEventListener('click', () => {
+    sortButtonElement.forEach((item) => {
+      item.classList.remove('sort__button--active');
+    });
+    element.classList.add('sort__button--active');
+  });
+});
+
+const filmDetailsElement = document.querySelector('.film-details__top-container');
+render(filmDetailsElement, getFilmTemplate(moviesData[0]), 'beforeend');
+render(filmDetailsElement, filmDetailsControls(generateFilm()), 'beforeend');
+
+const commentsListElement = document.querySelector('.film-details__comments-list');
+render(commentsListElement, commentsArray, 'beforeend');
+
+const popupCloseBtn = document.querySelector('.film-details__close-btn');
+
+popupCloseBtn.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  const popup = document.querySelector('.film-details');
+  popup.remove();
+});
+
 
 const filmsListContainerElement = document.querySelector('.films-list__container');
-renderMovieList(filmsListContainerElement, filmsMajor);
+for (let i = 0; i < Math.min(moviesData.length, NUMBER_MOVIES_PER_STEP); i++) {
+  render(filmsListContainerElement, getFilmCardTemplate(moviesData[i]), 'beforeend');
+}
+
+const filmListElement = siteMainElement.querySelector('.films-list');
+if (moviesData.length > NUMBER_MOVIES_PER_STEP) {
+  let renderedFilmsCount = NUMBER_MOVIES_PER_STEP;
+
+  render(filmListElement, createShowMoreButton(), 'beforeend');
+
+  const showMoreBtn = document.querySelector('.films-list__show-more');
+
+  showMoreBtn.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    moviesData.slice(renderedFilmsCount, renderedFilmsCount + NUMBER_MOVIES_PER_STEP).forEach((movie) => render(filmsListContainerElement, getFilmCardTemplate(movie), 'beforeend'));
+
+    renderedFilmsCount += NUMBER_MOVIES_PER_STEP;
+
+    if(renderedFilmsCount >= moviesData.length) {
+      showMoreBtn.remove();
+    }
+  });
+}
 
 const filmsListExtraContainerElement = document.querySelector('.films-list--extra').querySelector('.films-list__container');
-renderMovieList(filmsListExtraContainerElement, topRatedFilms);
+const topRated = moviesData.slice().sort((first, second) => (second.rating - first.rating)).slice(0, NUMBER_TOP_RATED);
+render(filmsListExtraContainerElement, topRated.map(getFilmCardTemplate).join(''), 'beforeend');
 
 const filmsLastChildContainerElement = document.querySelector('.films-list--extra:last-child').querySelector('.films-list__container');
-renderMovieList(filmsLastChildContainerElement, mostCommentedFilms);
+const mostCommented = moviesData.slice().sort((first, second) => (second.numberOfComments - first.numberOfComments)).slice(0, NUMBER_MOST_COMMENTED);
+render(filmsLastChildContainerElement, mostCommented.map(getFilmCardTemplate).join(''), 'beforeend');
