@@ -7,13 +7,9 @@ import FilmsContainerView from './view/films-container.js';
 import FilmsExtraView from './view/film-list-extra.js';
 import NumberFilmsView from './view/number-films.js';
 import PopupView from './view/popup.js';
-import PopupFormView from './view/popup-form.js';
-import PopupTopView from './view/popup-top.js';
 import PopupBottomView from './view/popup-bottom.js';
 import PopupCommentsView from './view/popup-comments.js';
 import ShowMoreBtnView from './view/show-more-button.js';
-import FilmDetailsView from './view/popup-film-details';
-import FilmControlsView from './view/popup-film-controls';
 import CommentView from './view/popup-film-comment.js';
 import FilmCardView from './view/film-card-view.js';
 import {generateFilm, generateComment} from './mock/film-data.js';
@@ -34,24 +30,19 @@ const siteFooterElement = document.querySelector('.footer');
 const footerStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 
 const renderPopup = (film) => {
-  const popupComponent = new PopupView();
+  const popupComponent = new PopupView(film);
   render(bodyElement, popupComponent.getElement(), RenderPosition.BEFOREEND);
-  const popupFormComponent = new PopupFormView();
-  render(popupComponent.getElement(), popupFormComponent.getElement(), RenderPosition.BEFOREEND);
 
-  const popupTopComponent = new PopupTopView();
-  render(popupFormComponent.getElement(), popupTopComponent.getElement(), RenderPosition.BEFOREEND);
-  render(popupTopComponent.getElement(), new FilmDetailsView(film).getElement(), RenderPosition.BEFOREEND);
-  render(popupTopComponent.getElement(), new FilmControlsView(film).getElement(), RenderPosition.BEFOREEND);
-  const popupCloseBtn = popupTopComponent.getElement().querySelector('.film-details__close-btn');
+  const popupCloseBtn = popupComponent.getElement().querySelector('.film-details__close-btn');
   popupCloseBtn.addEventListener('click', (evt) => {
     evt.preventDefault();
     const popup = document.querySelector('.film-details');
     popup.remove();
   });
 
+  const formElement = popupComponent.getElement().querySelector('.film-details__inner');
   const popupBottomComponent = new PopupBottomView();
-  render(popupFormComponent.getElement(), popupBottomComponent.getElement(), RenderPosition.BEFOREEND);
+  render(formElement, popupBottomComponent.getElement(), RenderPosition.BEFOREEND);
   render(popupBottomComponent.getElement(), new PopupCommentsView(moviesData[0]).getElement(), RenderPosition.BEFOREEND);
   const commentsListElement = popupBottomComponent.getElement().querySelector('.film-details__comments-list');
   commentsArray.forEach((comment) => render(commentsListElement, new CommentView(comment).getElement(), RenderPosition.BEFOREEND));
