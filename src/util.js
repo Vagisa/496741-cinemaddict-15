@@ -1,5 +1,32 @@
 import dayjs from 'dayjs';
 
+export const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};
+
+const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
 const getRandomInteger = (firstNumber, secondNumber) => {
   if (firstNumber < 0 || secondNumber < 0) {
     return NaN;
@@ -62,10 +89,16 @@ const getArraySpecifiedLength = (initialArrayElements, lengthFrom, lengthTo) =>
   return newArray;
 };
 
-const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-  return newElement.firstElementChild;
+export const setToggleButton = (buttonClass) => {
+  const buttonElement = document.querySelectorAll(`.${buttonClass}`);
+  buttonElement.forEach((element) => {
+    element.addEventListener('click', () => {
+      buttonElement.forEach((item) => {
+        item.classList.remove(`${buttonClass}--active`);
+      });
+      element.classList.add(`${buttonClass}--active`);
+    });
+  });
 };
 
 export {

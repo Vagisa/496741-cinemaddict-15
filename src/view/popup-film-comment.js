@@ -1,12 +1,13 @@
 import dayjs from 'dayjs';
+import {createElement} from '../util';
 
-export const filmComment = ({
-  author,
-  commentOnFilm,
-  date,
-  emotion,
-}) => {
-
+const createCommentTemplte = (comment) => {
+  const {
+    author,
+    commentOnFilm,
+    date,
+    emotion,
+  } = comment;
   const commentDate = dayjs(date).format('YYYY/MM/DD HH:MM');
 
   return `<li class="film-details__comment">
@@ -23,3 +24,26 @@ export const filmComment = ({
     </div>
   </li>`;
 };
+
+export default class Comment {
+  constructor(comment) {
+    this._comment = comment;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCommentTemplte(this._comment);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
