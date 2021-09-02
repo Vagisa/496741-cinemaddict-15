@@ -3,7 +3,8 @@ import {
   getArraySpecifiedLength,
   getRandomInteger,
   getRandomFloat,
-  generateDate
+  generateDate,
+  getArrayRandomLength
 } from '../util.js';
 
 const filmTitles = [
@@ -41,6 +42,22 @@ const filmActors = [
   'Monica Bellucci',
   'Johnny Depp',
   'Brad Pitt',
+];
+
+const filmDirectors = [
+  'J.J. Abrams',
+  'Pedro Almodovar',
+  'Francis Ford Coppola',
+  'David Lynch',
+  'Christopher Nolan',
+];
+
+const filmWriters = [
+  'Anne Wigton',
+  'Heinz Herald',
+  'Richard Weil',
+  'Stephen Edwin King',
+  'Ray Douglas Bradbury',
 ];
 
 const filmGenres = ['Musical', 'Western', 'Drama', 'Cartoon', 'Comedy', 'Mystery'];
@@ -103,6 +120,8 @@ const generateFilm = () => {
     numberOfComments: getRandomInteger(0, 5),
     country: getRandomArrayElement(filmCountrys),
     actors: getArraySpecifiedLength(filmActors, 1, filmActors.length).join(' '),
+    director: getRandomArrayElement(filmDirectors),
+    writers: getArrayRandomLength(filmWriters),
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     isHistory: Boolean(getRandomInteger(0, 1)),
     isFavorites: Boolean(getRandomInteger(0, 1)),

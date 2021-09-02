@@ -1,4 +1,6 @@
-export const createProfileRatingTemplate = (films) => {
+import {createElement} from '../util';
+
+const createRatingTemplate = (films) => {
   const moviesWatched = films.filter((element) => element.isHistory).length;
   let userRank = '';
   if (moviesWatched === 0) {
@@ -15,3 +17,26 @@ export const createProfileRatingTemplate = (films) => {
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };
+
+export default class Rating {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createRatingTemplate(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

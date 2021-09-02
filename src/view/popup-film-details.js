@@ -1,16 +1,20 @@
 import dayjs from 'dayjs';
+import {createElement} from '../util';
 
-export const getFilmTemplate = ({
-  title,
-  rating,
-  date,
-  duration,
-  genres,
-  poster,
-  description,
-  country,
-  actors,
-}) => {
+const createFilmDetailsTemplate = (film) => {
+  const {
+    title,
+    rating,
+    date,
+    duration,
+    genres,
+    poster,
+    description,
+    country,
+    actors,
+    director,
+    writers,
+  } = film;
 
   const releaseDate = dayjs(date).format('D MMMM YYYY');
 
@@ -36,11 +40,11 @@ export const getFilmTemplate = ({
       <table class="film-details__table">
         <tr class="film-details__row">
           <td class="film-details__term">Director</td>
-          <td class="film-details__cell">Anthony Mann</td>
+          <td class="film-details__cell">${director}</td>
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Writers</td>
-          <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
+          <td class="film-details__cell">${writers}</td>
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Actors</td>
@@ -70,3 +74,26 @@ export const getFilmTemplate = ({
     </div>
   </div>`;
 };
+
+export default class FilmDetails {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

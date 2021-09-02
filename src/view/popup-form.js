@@ -1,21 +1,21 @@
 import {createElement} from '../util';
 
-const createContentTemplate = () => (
-  `<section class="films">
-  </section>`
+const createPopupFormTemplate = () => (
+  `<form class="film-details__inner" action="" method="get">
+  </form>`
 );
 
-export default class Content {
+export default class PopupForm {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createContentTemplate();
+    return createPopupFormTemplate();
   }
 
   getElement() {
-    if (!this._element) {
+    if(!this._element) {
       this._element = createElement(this.getTemplate());
     }
 
