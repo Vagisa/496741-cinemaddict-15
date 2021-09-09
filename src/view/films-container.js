@@ -12,7 +12,7 @@ export default class FilmsContainer {
   }
 
   getTemplate() {
-    return createFilmsContainerTemplate(this._filmListClass, this._title, this._titleClass);
+    return createFilmsContainerTemplate();
   }
 
   getElement() {
