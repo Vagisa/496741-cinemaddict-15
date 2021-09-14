@@ -1,8 +1,18 @@
-import {createElement} from '../util';
+import AbstractView from './abstract';
 
-const createNoMoviesTextTemplate = (hashchange) => {
-  const text = () => {
-    switch (hashchange) {
+export default class NoMoviesText extends AbstractView {
+  constructor(tab = 'all') {
+    super();
+    this._tab = tab;
+    this._tabChangeCallback = this._tabChangeCallback.bind(this);
+  }
+
+  getTemplate() {
+    return `<h2 class="films-list__title">${this._getText()}</h2>`;
+  }
+
+  _getText() {
+    switch (this._tab) {
       case 'all':
         return 'There are no movies in our database';
       case 'watchlist':
@@ -14,32 +24,14 @@ const createNoMoviesTextTemplate = (hashchange) => {
       default:
         return '';
     }
-  };
-
-  return `<h2 class="films-list__title">
-    ${text()}
-  </h2>`;
-};
-
-export default class NoMoviesText {
-  constructor(tab = 'all') {
-    this._tab = tab;
-    this._element = null;
   }
 
-  getTemplate() {
-    return createNoMoviesTextTemplate(this._tab);
+  _tabChangeCallback(evt) {
+    this._tab = `${evt.newURL.split('#')[1]}`;
+    this._element.textContent = this._getText();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setHashchangeListener() {
+    window.addEventListener('hashchange', this._tabChangeCallback);
   }
 }

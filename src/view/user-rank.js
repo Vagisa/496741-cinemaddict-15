@@ -1,4 +1,4 @@
-import {createElement} from '../util';
+import AbstractView from './abstract';
 
 const createRatingTemplate = (films) => {
   const moviesWatched = films.filter((element) => element.isHistory).length;
@@ -18,25 +18,13 @@ const createRatingTemplate = (films) => {
   </section>`;
 };
 
-export default class Rating {
+export default class Rating extends AbstractView {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createRatingTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

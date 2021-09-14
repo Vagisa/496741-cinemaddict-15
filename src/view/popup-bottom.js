@@ -1,28 +1,12 @@
-import {createElement} from '../util';
+import AbstractView from './abstract';
 
 const createPopupBottomTemplate = () => (
   `<div class="film-details__bottom-container">
   </div>`
 );
 
-export default class PopupBottom {
-  constructor() {
-    this._element = null;
-  }
-
+export default class PopupBottom extends AbstractView{
   getTemplate() {
     return createPopupBottomTemplate();
-  }
-
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
