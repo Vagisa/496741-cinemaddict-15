@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../util';
+import AbstractView from './abstract';
 
 const createPopupTemplate = (film) => {
   const {
@@ -107,25 +107,24 @@ const createPopupTemplate = (film) => {
   </section>`;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+    this._popupCloseClick = this._popupCloseClick.bind(this);
   }
 
   getTemplate() {
     return createPopupTemplate(this._film);
   }
 
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _popupCloseClick(evt) {
+    evt.preventDefault();
+    this._callback.popupClose();
   }
 
-  removeElement() {
-    this._element = null;
+  setPopupCloseClick(callback) {
+    this._callback.popupClose = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._popupCloseClick);
   }
 }

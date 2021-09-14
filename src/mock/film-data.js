@@ -3,9 +3,9 @@ import {
   getArraySpecifiedLength,
   getRandomInteger,
   getRandomFloat,
-  generateDate,
   getArrayRandomLength
-} from '../util.js';
+} from '../utils/common.js';
+import {generateDate} from '../utils/util.js';
 
 const filmTitles = [
   'The Dance of Life',
