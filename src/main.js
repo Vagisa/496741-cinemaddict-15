@@ -1,6 +1,4 @@
 import RatingView from './view/user-rank.js';
-import MenuView from './view/site-menu.js';
-import SortView from './view/sort.js';
 import NumberFilmsView from './view/number-films.js';
 import FilmListPresenter from './presenter/film-list.js';
 import {generateFilm, generateComment} from './mock/film-data.js';
@@ -18,9 +16,6 @@ const footerStatisticsElement = siteFooterElement.querySelector('.footer__statis
 
 const filmsPresenter = new FilmListPresenter(siteMainElement);
 render(siteHeaderElement, new RatingView(moviesData), RenderPosition.BEFOREEND);
-const MenuComponent = new MenuView(moviesData);
-render(siteMainElement, MenuComponent, RenderPosition.BEFOREEND);
-render(siteMainElement, new SortView(), RenderPosition.BEFOREEND);
 filmsPresenter.init(moviesData, commentsArray);
 render(footerStatisticsElement, new NumberFilmsView(moviesData), RenderPosition.BEFOREEND);
 
