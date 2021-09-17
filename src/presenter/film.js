@@ -1,46 +1,30 @@
 import FilmCardView from '../view/film-card-view.js';
-import PopupView from '../view/popup.js';
-import PopupBottomView from '../view/popup-bottom.js';
-import PopupCommentsView from '../view/popup-comments.js';
-import CommentView from '../view/popup-film-comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
-import {generateComment} from '../mock/film-data.js';
-const isPopup = {status:false};
 
 export default class Film {
-  constructor(filmContainer, changeData) {
+  constructor(filmContainer, changeData, popupOpen) {
     this._filmContainer = filmContainer;
     this._changeData = changeData;
+    this._popupOpen = popupOpen;
 
     this._filmComponent = null;
-    this._popupComponent = null;
-    this._isPopup = isPopup;
-    this._bodyElement = document.querySelector('body');
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleHistoryClick = this._handleHistoryClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
-    this._closePopup = this._closePopup.bind(this);
   }
 
   init(film) {
     this._film = film;
 
     const prevfilmComponent = this._filmComponent;
-    const prevPopupComponent = this._popupComponent;
-    this._popupBottomComponent = new PopupBottomView();
     this._filmComponent = new FilmCardView(this._film);
-    this._popupComponent = new PopupView(this._film);
     this._filmComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmComponent.setHistoryClickHandler(this._handleHistoryClick);
     this._filmComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmComponent.setPopupOpenClick(() => {
-      this._renderPopup();
-    });
+    this._filmComponent.setPopupOpenClick(() => this._popupOpen(this._film));
 
     if (prevfilmComponent === null) {
-      this._comments = new Array(this._film.numberOfComments).fill().map(generateComment);
 
       render(this._filmContainer, this._filmComponent, RenderPosition.BEFOREEND);
       return;
@@ -50,53 +34,11 @@ export default class Film {
       replace(this._filmComponent, prevfilmComponent);
     }
 
-    if (!(prevPopupComponent === null) && (this._isPopup.status)) {
-      this._closePopup();
-      this._renderPopup();
-    }
-    remove(prevPopupComponent);
     remove(prevfilmComponent);
   }
 
   destroy() {
     remove(this._filmComponent);
-  }
-
-  _renderPopup() {
-    if (this._isPopup.status) {
-      return;
-    }
-    render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
-    this._bodyElement.classList.add('hide-overflow');
-
-    this._popupComponent.setPopupCloseClick(this._closePopup);
-    this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._popupComponent.setHistoryClickHandler(this._handleHistoryClick);
-
-    this._renderPopupBottom();
-    this._renderPopupComments();
-    document.addEventListener('keydown', this._onEscKeyDown);
-    this._isPopup.status = true;
-  }
-
-  _renderPopupBottom() {
-    const formElement = this._popupComponent.getElement().querySelector('.film-details__inner');
-    render(formElement, this._popupBottomComponent, RenderPosition.BEFOREEND);
-  }
-
-  _renderPopupComments() {
-    const popupCommentsComponent = new PopupCommentsView(this._film);
-    render(this._popupBottomComponent, popupCommentsComponent, RenderPosition.BEFOREEND);
-    const commentsListElement = popupCommentsComponent.getElement().querySelector('.film-details__comments-list');
-    this._comments.forEach((comment) => render(commentsListElement, new CommentView(comment), RenderPosition.BEFOREEND));
-  }
-
-  _closePopup() {
-    remove(this._popupComponent);
-    this._bodyElement.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this._onEscKeyDown);
-    this._isPopup.status = false;
   }
 
   _handleFavoriteClick() {
@@ -133,12 +75,5 @@ export default class Film {
         },
       ),
     );
-  }
-
-  _onEscKeyDown(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this._closePopup();
-    }
   }
 }
