@@ -13,6 +13,7 @@ export default class Film {
     this._changeData = changeData;
 
     this._filmComponent = null;
+    this._popupComponent = null;
     this._bodyElement = document.querySelector('body');
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -27,7 +28,7 @@ export default class Film {
     this._comments = comments;
 
     const prevfilmComponent = this._filmComponent;
-
+    const prevPopupComponent = this._popupComponent;
     this._popupBottomComponent = new PopupBottomView();
     this._filmComponent = new FilmCardView(this._film);
     this._popupComponent = new PopupView(this._film);
@@ -47,7 +48,12 @@ export default class Film {
       replace(this._filmComponent, prevfilmComponent);
     }
 
+    if (!(prevPopupComponent === null)) {
+      replace( this._popupComponent, prevPopupComponent);
+    }
+
     remove(prevfilmComponent);
+    remove(prevPopupComponent);
   }
 
   destroy() {
@@ -63,6 +69,9 @@ export default class Film {
 
     popupElement = document.querySelector('.film-details');
     this._popupComponent.setPopupCloseClick(this._closePopup);
+    this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._popupComponent.setHistoryClickHandler(this._handleHistoryClick);
 
     this._renderPopupBottom();
     this._renderPopupComments();
