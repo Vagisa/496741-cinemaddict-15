@@ -26,6 +26,7 @@ export default class FilmList {
     this._filmPresenter = new Map();
     this._bodyElement = document.querySelector('body');
 
+    this._popupCommentsComponent = null;
     this._contentComponent = new ContentView();
     this._filmsListComponent = new FilmsListView();
     this._filmsContainerComponent = new FilmsContainerView();
@@ -143,14 +144,16 @@ export default class FilmList {
   _renderPopupComments(film) {
     const comments = new Array(film.numberOfComments).fill().map(generateComment);
 
-    const popupCommentsComponent = new PopupCommentsView(film);
-    render(this._popupBottomComponent, popupCommentsComponent, RenderPosition.BEFOREEND);
-    const commentsListElement = popupCommentsComponent.getElement().querySelector('.film-details__comments-list');
+    this._popupCommentsComponent = new PopupCommentsView(film);
+    render(this._popupBottomComponent, this._popupCommentsComponent, RenderPosition.BEFOREEND);
+    const commentsListElement = this._popupCommentsComponent.getElement().querySelector('.film-details__comments-list');
     comments.forEach((comment) => render(commentsListElement, new CommentView(comment), RenderPosition.BEFOREEND));
   }
 
   _closePopup() {
-    this._popupComponent.getElement().remove();
+    remove(this._popupComponent);
+    remove(this._popupBottomComponent);
+    remove(this._popupBottomComponent);
     remove(this._popupComponent);
     this._bodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._onEscKeyDown);
