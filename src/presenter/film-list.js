@@ -29,9 +29,8 @@ export default class FilmList {
     this._handleShowMoreBtnClick = this._handleShowMoreBtnClick.bind(this);
   }
 
-  init(moviesData, commentsArray) {
+  init(moviesData) {
     this._moviesData = moviesData.slice();
-    this._commentsArray = commentsArray.slice();
 
     this._renderMenu();
     this._renderSort();
@@ -94,7 +93,7 @@ export default class FilmList {
 
   _renderFilm(film, container) {
     const filmPresenter = new FilmPresenter(container, this._handleFilmChange);
-    filmPresenter.init(film, this._commentsArray);
+    filmPresenter.init(film);
     this._filmPresenter.set(film.id, filmPresenter);
   }
 

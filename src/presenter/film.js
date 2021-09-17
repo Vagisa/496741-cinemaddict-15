@@ -4,8 +4,7 @@ import PopupBottomView from '../view/popup-bottom.js';
 import PopupCommentsView from '../view/popup-comments.js';
 import CommentView from '../view/popup-film-comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
-
-let popupElement = null;
+import {generateComment} from '../mock/film-data.js';
 
 export default class Film {
   constructor(filmContainer, changeData) {
@@ -23,9 +22,8 @@ export default class Film {
     this._closePopup = this._closePopup.bind(this);
   }
 
-  init(film, comments) {
+  init(film) {
     this._film = film;
-    this._comments = comments;
 
     const prevfilmComponent = this._filmComponent;
     const prevPopupComponent = this._popupComponent;
@@ -40,6 +38,8 @@ export default class Film {
     });
 
     if (prevfilmComponent === null) {
+      this._comments = new Array(this._film.numberOfComments).fill().map(generateComment);
+
       render(this._filmContainer, this._filmComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -49,11 +49,10 @@ export default class Film {
     }
 
     if (!(prevPopupComponent === null)) {
-      replace( this._popupComponent, prevPopupComponent);
+      remove(prevPopupComponent);
+      this._renderPopup();
     }
-
     remove(prevfilmComponent);
-    remove(prevPopupComponent);
   }
 
   destroy() {
@@ -61,13 +60,9 @@ export default class Film {
   }
 
   _renderPopup() {
-    if (popupElement) {
-      return;
-    }
     render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
     this._bodyElement.classList.add('hide-overflow');
 
-    popupElement = document.querySelector('.film-details');
     this._popupComponent.setPopupCloseClick(this._closePopup);
     this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -91,8 +86,7 @@ export default class Film {
   }
 
   _closePopup() {
-    popupElement.remove();
-    popupElement = null;
+    remove(this._popupComponent);
     this._bodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
@@ -134,9 +128,6 @@ export default class Film {
   }
 
   _onEscKeyDown(evt) {
-    if (!popupElement) {
-      return;
-    }
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this._closePopup();
