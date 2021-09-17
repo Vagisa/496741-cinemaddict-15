@@ -6,6 +6,7 @@ import {
   getArrayRandomLength
 } from '../utils/common.js';
 import {generateDate} from '../utils/util.js';
+import {nanoid} from 'nanoid';
 
 const filmTitles = [
   'The Dance of Life',
@@ -110,6 +111,7 @@ const generateFilm = () => {
   const movieTitle = getRandomArrayElement(filmTitles);
 
   return {
+    id: nanoid(),
     title: movieTitle,
     rating: getRandomFloat(0, 10, 1),
     date: generateDate(),

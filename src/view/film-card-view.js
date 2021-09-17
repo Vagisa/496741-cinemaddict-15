@@ -49,11 +49,50 @@ export default class FilmCard extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._historyClickHandler = this._historyClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._popupOpenClick = this._popupOpenClick.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback._favoriteClick();
+  }
+
+  _historyClickHandler(evt) {
+    evt.preventDefault();
+    this._callback._historyClick();
+  }
+
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback._watchlistClick();
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback._favoriteClick = callback;
+    this.getElement()
+      .querySelector('.film-card__controls-item--favorite')
+      .addEventListener('click', this._favoriteClickHandler);
+  }
+
+  setHistoryClickHandler(callback) {
+    this._callback._historyClick = callback;
+    this.getElement()
+      .querySelector('.film-card__controls-item--mark-as-watched')
+      .addEventListener('click', this._historyClickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback._watchlistClick = callback;
+    this.getElement()
+      .querySelector('.film-card__controls-item--add-to-watchlist')
+      .addEventListener('click', this._watchlistClickHandler);
   }
 
   _popupOpenClick(evt) {
@@ -63,8 +102,12 @@ export default class FilmCard extends AbstractView {
 
   setPopupOpenClick(callback) {
     this._callback.popupOpen = callback;
-    this.getElement().querySelectorAll('.film-card__title, .film-card__poster, .film-card__comments').forEach(
-      (element) => element.addEventListener('click', this._popupOpenClick),
-    );
+    this.getElement()
+      .querySelectorAll('.film-card__title, .film-card__poster, .film-card__comments')
+      .forEach(
+        (element) => {
+          element.addEventListener('click', this._popupOpenClick);
+        },
+      );
   }
 }
