@@ -5,6 +5,7 @@ import PopupCommentsView from '../view/popup-comments.js';
 import CommentView from '../view/popup-film-comment.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {generateComment} from '../mock/film-data.js';
+const isPopup = {status:false};
 
 export default class Film {
   constructor(filmContainer, changeData) {
@@ -13,6 +14,7 @@ export default class Film {
 
     this._filmComponent = null;
     this._popupComponent = null;
+    this._isPopup = isPopup;
     this._bodyElement = document.querySelector('body');
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -48,10 +50,11 @@ export default class Film {
       replace(this._filmComponent, prevfilmComponent);
     }
 
-    if (!(prevPopupComponent === null)) {
-      remove(prevPopupComponent);
+    if (!(prevPopupComponent === null) && (this._isPopup.status)) {
+      this._closePopup();
       this._renderPopup();
     }
+    remove(prevPopupComponent);
     remove(prevfilmComponent);
   }
 
@@ -60,6 +63,9 @@ export default class Film {
   }
 
   _renderPopup() {
+    if (this._isPopup.status) {
+      return;
+    }
     render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
     this._bodyElement.classList.add('hide-overflow');
 
@@ -71,6 +77,7 @@ export default class Film {
     this._renderPopupBottom();
     this._renderPopupComments();
     document.addEventListener('keydown', this._onEscKeyDown);
+    this._isPopup.status = true;
   }
 
   _renderPopupBottom() {
@@ -89,6 +96,7 @@ export default class Film {
     remove(this._popupComponent);
     this._bodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._onEscKeyDown);
+    this._isPopup.status = false;
   }
 
   _handleFavoriteClick() {
