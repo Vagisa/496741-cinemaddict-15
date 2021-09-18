@@ -85,7 +85,6 @@ const commentTexts = [
   'Cosa sei',
 ];
 
-
 const pikUpPosterForMovie = (title) => {
   switch (title) {
     case 'The Dance of Life':
@@ -107,6 +106,14 @@ const pikUpPosterForMovie = (title) => {
   }
 };
 
+const generateComment = () => ({
+  id: getRandomInteger(0, 100),
+  author: getRandomArrayElement(commentAuthors),
+  commentOnFilm: getRandomArrayElement(commentTexts),
+  date: generateDate(),
+  emotion: getRandomArrayElement(filmEmotions),
+});
+
 const generateFilm = () => {
   const movieTitle = getRandomArrayElement(filmTitles);
 
@@ -119,7 +126,6 @@ const generateFilm = () => {
     genres: getArraySpecifiedLength(filmGenres, 1, filmGenres.length),
     poster: `./images/posters/${pikUpPosterForMovie(movieTitle)}`,
     description: getArraySpecifiedLength(filmDescriptions, 1, 5).join(' '),
-    numberOfComments: getRandomInteger(0, 5),
     country: getRandomArrayElement(filmCountrys),
     actors: getArraySpecifiedLength(filmActors, 1, filmActors.length).join(' '),
     director: getRandomArrayElement(filmDirectors),
@@ -127,15 +133,8 @@ const generateFilm = () => {
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     isHistory: Boolean(getRandomInteger(0, 1)),
     isFavorites: Boolean(getRandomInteger(0, 1)),
+    comments: new Array(getRandomInteger(0, 5)).fill().map(generateComment),
   };
 };
 
-const generateComment = () => ({
-  id: getRandomInteger(0, 100),
-  author: getRandomArrayElement(commentAuthors),
-  commentOnFilm: getRandomArrayElement(commentTexts),
-  date: generateDate(),
-  emotion: getRandomArrayElement(filmEmotions),
-});
-
-export {generateFilm, generateComment};
+export {generateFilm};

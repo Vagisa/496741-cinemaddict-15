@@ -12,7 +12,6 @@ import PopupBottomView from '../view/popup-bottom.js';
 import PopupCommentsView from '../view/popup-comments.js';
 import CommentView from '../view/popup-film-comment.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
-import {generateComment} from '../mock/film-data.js';
 import {updateItem} from '../utils/common.js';
 import {SortType} from '../const.js';
 import dayjs from 'dayjs';
@@ -83,7 +82,7 @@ export default class FilmList {
         this._moviesData.sort((first, second) => (second.rating - first.rating));
         break;
       default:
-        this._moviesData = this._sourcedMoviesData;
+        this._moviesData = this._sourcedMoviesData.slice();
     }
 
     this._currentSortType = sortType;
@@ -144,7 +143,7 @@ export default class FilmList {
     const topRatedFilms = this._moviesData.slice().sort((first, second) => (second.rating - first.rating)).slice(0, NUMBER_TOP_RATED);
     this._renderFilmListExtra(topRatedFilms, 'Top rated');
 
-    const mostCommentedFilms = this._moviesData.slice().sort((first, second) => (second.numberOfComments - first.numberOfComments)).slice(0, NUMBER_MOST_COMMENTED);
+    const mostCommentedFilms = this._moviesData.slice().sort((first, second) => (second.comments.length - first.comments.length)).slice(0, NUMBER_MOST_COMMENTED);
     this._renderFilmListExtra(mostCommentedFilms, 'Most commented');
   }
 
@@ -181,12 +180,10 @@ export default class FilmList {
   }
 
   _renderPopupComments(film) {
-    const comments = new Array(film.numberOfComments).fill().map(generateComment);
-
     this._popupCommentsComponent = new PopupCommentsView(film);
     render(this._popupBottomComponent, this._popupCommentsComponent, RenderPosition.BEFOREEND);
     const commentsListElement = this._popupCommentsComponent.getElement().querySelector('.film-details__comments-list');
-    comments.forEach((comment) => render(commentsListElement, new CommentView(comment), RenderPosition.BEFOREEND));
+    film.comments.forEach((comment) => render(commentsListElement, new CommentView(comment), RenderPosition.BEFOREEND));
   }
 
   _closePopup() {

@@ -5,7 +5,7 @@ const createPopupCommentsTemplate = (films) => (
     <h3 class="film-details__comments-title">
       Comments
       <span class="film-details__comments-count">
-        ${films.numberOfComments}
+        ${films.comments.length}
       </span>
     </h3>
 
