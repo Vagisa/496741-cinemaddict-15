@@ -1,13 +1,15 @@
 import AbstractView from './abstract';
 
-const createPopupCommentsTemplate = (films) => (
-  `<section class="film-details__comments-wrap">
-    <h3 class="film-details__comments-title">
+const createPopupCommentsTemplate = (data) => {
+  const {comments, isComments} = data;
+  return `<section class="film-details__comments-wrap">
+    ${isComments ?
+    `<h3 class="film-details__comments-title">
       Comments
       <span class="film-details__comments-count">
-        ${films.comments.length}
+        ${comments.length}
       </span>
-    </h3>
+    </h3>` : ''}
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
@@ -42,16 +44,48 @@ const createPopupCommentsTemplate = (films) => (
         </label>
       </div>
     </div>
-  </section>`
-);
+  </section>`;
+};
 
 export default class PopupComments extends AbstractView {
-  constructor(films) {
+  constructor(film) {
     super();
-    this._films = films;
+    this._data = PopupComments.parseFilmToData(film);
   }
 
   getTemplate() {
-    return createPopupCommentsTemplate(this._films);
+    return createPopupCommentsTemplate(this._data);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit(PopupComments.parseDataToFilm(this._data));
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+      {},
+      film,
+      {
+        isComments: film.comments.length !== 0,
+      },
+    );
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    if (!data.isComments) {
+      data.comments = [];
+    }
+
+    delete data.isComments;
+
+    return data;
   }
 }

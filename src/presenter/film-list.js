@@ -10,7 +10,7 @@ import FilmPresenter from './film.js';
 import PopupView from '../view/popup.js';
 import PopupBottomView from '../view/popup-bottom.js';
 import PopupCommentsView from '../view/popup-comments.js';
-import CommentView from '../view/popup-film-comment.js';
+import CommentView from '../view/comment.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {updateItem} from '../utils/common.js';
 import {SortType} from '../const.js';
