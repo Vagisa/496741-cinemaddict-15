@@ -165,7 +165,6 @@ export default class FilmList {
     this._popupComponent.setFavoriteClickHandler(() => this._handleFavoriteClick(film));
     this._popupComponent.setWatchlistClickHandler(() => this._handleWatchlistClick(film));
     this._popupComponent.setHistoryClickHandler(() => this._handleHistoryClick(film));
-   // this._popupComponent.reset(film);
   }
 
   _closePopup() {
