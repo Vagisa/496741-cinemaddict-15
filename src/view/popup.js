@@ -29,8 +29,7 @@ const createPopupCommentsTemplate = (
   comments,
   emojy,
   newComment,
-  isComments,
-  isEmoji) => (
+  isComments) => (
   `<section class="film-details__comments-wrap">
     ${isComments ?
     `<h3 class="film-details__comments-title">
@@ -47,7 +46,7 @@ const createPopupCommentsTemplate = (
 
     <div class="film-details__new-comment">
       <div class="film-details__add-emoji-label">
-        ${isEmoji ? `<img src="images/emoji/${emojy}.png" width="55" height="55" alt="emoji-${emojy}"></img>` : '' }
+        ${emojy ? `<img src="images/emoji/${emojy}.png" width="55" height="55" alt="emoji-${emojy}"></img>` : '' }
       </div>
 
       <label class="film-details__comment-label">
@@ -99,10 +98,9 @@ const createPopupTemplate = (data) => {
     isHistory,
     isFavorites,
     isComments,
-    isEmoji,
   } = data;
 
-  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newComment, isComments, isEmoji);
+  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newComment, isComments);
   const releaseDate = dayjs(date).format('D MMMM YYYY');
 
   return `<section class="film-details">
@@ -314,7 +312,6 @@ export default class Popup extends SmartView {
       film,
       {
         isComments: film.comments.length !== 0,
-        isEmoji: film.emojy !== null,
         newComment: '',
       },
     );
@@ -327,12 +324,7 @@ export default class Popup extends SmartView {
       data.comments = [];
     }
 
-    if (!data.isEmoji) {
-      data.emojy = null;
-    }
-
     delete data.isComments;
-    delete data.isEmoji;
 
     return data;
   }
