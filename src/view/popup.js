@@ -206,6 +206,12 @@ export default class Popup extends SmartView {
     this._setInnerHandlers();
   }
 
+  updateData(...args) {
+    const scroll = this._element.scrollTop;
+    super.updateData(...args);
+    this._element.scroll(0, scroll);
+  }
+
   reset(film) {
     this.updateData(
       Popup.parseFilmToData(film),
