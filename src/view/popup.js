@@ -1,5 +1,10 @@
 import SmartView from './smart';
 import dayjs from 'dayjs';
+import durationPlugin from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(durationPlugin);
+dayjs.extend(relativeTime);
 
 const createCommentTemplte = (comment) => {
   const {
@@ -8,7 +13,7 @@ const createCommentTemplte = (comment) => {
     date,
     emotion,
   } = comment;
-  const commentDate = dayjs(date).format('YYYY/MM/DD HH:MM');
+  const commentDate = dayjs(date).fromNow();
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -102,6 +107,9 @@ const createPopupTemplate = (data) => {
 
   const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newComment, isComments);
   const releaseDate = dayjs(date).format('D MMMM YYYY');
+  const filmDuration = dayjs
+    .duration(duration, 'minutes')
+    .format('H[h] mm[m]');
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -147,7 +155,7 @@ const createPopupTemplate = (data) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${duration}</td>
+                <td class="film-details__cell">${filmDuration}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
