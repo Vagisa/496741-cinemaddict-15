@@ -122,7 +122,7 @@ const generateFilm = () => {
     title: movieTitle,
     rating: getRandomFloat(0, 10, 1),
     date: generateDate(),
-    duration: `${getRandomInteger(0, 4)}h ${getRandomInteger(0, 59)}m`,
+    duration: getRandomInteger(20, 180),
     genres: getArraySpecifiedLength(filmGenres, 1, filmGenres.length),
     poster: `./images/posters/${pikUpPosterForMovie(movieTitle)}`,
     description: getArraySpecifiedLength(filmDescriptions, 1, 5).join(' '),
