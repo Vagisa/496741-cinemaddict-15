@@ -27,7 +27,7 @@ const createCommentTemplte = (comment) => {
 
 const createPopupCommentsTemplate = (
   comments,
-  emojy,
+  emotion,
   newComment,
   isComments) => (
   `<section class="film-details__comments-wrap">
@@ -46,7 +46,7 @@ const createPopupCommentsTemplate = (
 
     <div class="film-details__new-comment">
       <div class="film-details__add-emoji-label">
-        ${emojy ? `<img src="images/emoji/${emojy}.png" width="55" height="55" alt="emoji-${emojy}"></img>` : '' }
+        ${emotion ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '' }
       </div>
 
       <label class="film-details__comment-label">
