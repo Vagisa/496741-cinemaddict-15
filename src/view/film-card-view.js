@@ -10,7 +10,7 @@ const createFilmCardTemplate = (film) => {
     genres,
     poster,
     description,
-    numberOfComments,
+    comments,
     isWatchlist,
     isHistory,
     isFavorites,
@@ -27,7 +27,7 @@ const createFilmCardTemplate = (film) => {
     </p>
     <img src="${poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${description}</p>
-    <a class="film-card__comments">${numberOfComments} comments</a>
+    <a class="film-card__comments">${comments.length} comments</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item film-card__controls-item--add-to-watchlist
       ${isWatchlist? 'film-card__controls-item--active': ''}" type="button">
@@ -53,6 +53,7 @@ export default class FilmCard extends AbstractView {
     this._historyClickHandler = this._historyClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._popupOpenClick = this._popupOpenClick.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
   getTemplate() {
@@ -109,5 +110,17 @@ export default class FilmCard extends AbstractView {
           element.addEventListener('click', this._popupOpenClick);
         },
       );
+  }
+
+  _onEscKeyDown(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._callback.escKeyDown();
+    }
+  }
+
+  setEscKeyDown(callback) {
+    this._callback.escKeyDown = callback;
+    document.addEventListener('keydown', this._onEscKeyDown);
   }
 }

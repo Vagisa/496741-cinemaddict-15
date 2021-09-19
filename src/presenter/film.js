@@ -2,10 +2,15 @@ import FilmCardView from '../view/film-card-view.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 
 export default class Film {
-  constructor(filmContainer, changeData, popupOpen) {
+  constructor(
+    filmContainer,
+    changeData,
+    popupOpen,
+    popupClose) {
     this._filmContainer = filmContainer;
     this._changeData = changeData;
     this._popupOpen = popupOpen;
+    this._popupClose = popupClose;
 
     this._filmComponent = null;
 
@@ -23,6 +28,7 @@ export default class Film {
     this._filmComponent.setHistoryClickHandler(this._handleHistoryClick);
     this._filmComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmComponent.setPopupOpenClick(() => this._popupOpen(this._film));
+    this._filmComponent.setEscKeyDown(() => this._popupClose(this._film));
 
     if (prevfilmComponent === null) {
 
@@ -76,4 +82,5 @@ export default class Film {
       ),
     );
   }
+
 }
