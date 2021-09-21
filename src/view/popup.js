@@ -2,12 +2,15 @@ import SmartView from './smart';
 import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import he from 'he';
+import {nanoid} from 'nanoid';
 
 dayjs.extend(durationPlugin);
 dayjs.extend(relativeTime);
 
 const createCommentTemplte = (comment) => {
   const {
+    id,
     author,
     commentOnFilm,
     date,
@@ -24,7 +27,7 @@ const createCommentTemplte = (comment) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
       </p>
     </div>
   </li>`;
@@ -33,7 +36,7 @@ const createCommentTemplte = (comment) => {
 const createPopupCommentsTemplate = (
   comments,
   emotion,
-  newComment,
+  newText,
   isComments) => (
   `<section class="film-details__comments-wrap">
     ${isComments ?
@@ -55,7 +58,7 @@ const createPopupCommentsTemplate = (
       </div>
 
       <label class="film-details__comment-label">
-        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newComment}</textarea>
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newText}</textarea>
       </label>
 
       <div class="film-details__emoji-list">
@@ -96,7 +99,7 @@ const createPopupTemplate = (data) => {
     actors,
     director,
     writers,
-    newComment,
+    newText,
     comments,
     emojy,
     isWatchlist,
@@ -105,7 +108,7 @@ const createPopupTemplate = (data) => {
     isComments,
   } = data;
 
-  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newComment, isComments);
+  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newText, isComments);
   const releaseDate = dayjs(date).format('D MMMM YYYY');
   const filmDuration = dayjs
     .duration(duration, 'minutes')
@@ -210,6 +213,8 @@ export default class Popup extends SmartView {
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._newCommentInputHandler = this._newCommentInputHandler.bind(this);
     this._emojiSelectionHandler = this._emojiSelectionHandler.bind(this);
+    this._addNewCommentHandler = this._addNewCommentHandler.bind(this);
+    this._deleteCommentHandler = this._deleteCommentHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -237,6 +242,8 @@ export default class Popup extends SmartView {
     this.setFavoriteClickHandler(this._callback._favoriteClick);
     this.setHistoryClickHandler(this._callback._historyClick);
     this.setWatchlistClickHandler(this._callback._watchlistClick);
+    this.setAddCommentHandler(this._callback._addComment);
+    this.setDeleteCommentHandler(this._callback._deleteComment);
   }
 
   _setInnerHandlers() {
@@ -246,6 +253,8 @@ export default class Popup extends SmartView {
     this.getElement()
       .querySelector('.film-details__comment-input')
       .addEventListener('input', this._newCommentInputHandler);
+    this.getElement().querySelector('.film-details__comment-input')
+      .addEventListener('keydown', this._addNewCommentHandler);
   }
 
   _emojiSelectionHandler(evt) {
@@ -255,19 +264,72 @@ export default class Popup extends SmartView {
     });
   }
 
+  _addNewCommentHandler(evt) {
+    if (evt.ctrlKey && evt.key === 'Enter') {
+      const commentText = he.escape(evt.target.value);
+      evt.preventDefault();
+      const comment = {
+        id: nanoid(),
+        author: 'User',
+        commentOnFilm: commentText,
+        date: dayjs().toISOString(),
+        emotion: this._data.emojy,
+      };
+      this.updateData({
+        comments: [
+          ...this._data.comments,
+          comment,
+        ],
+        emojy: undefined,
+        newText: '',
+      });
+      this._callback._addComment(Popup.parseDataToFilm(this._data));
+    }
+  }
+
+  setAddCommentHandler(callback) {
+    this._callback._addComment = callback;
+    this._element.querySelector('.film-details__comment-input')
+      .addEventListener('keydown', this._addNewCommentHandler);
+  }
+
+  _deleteCommentHandler(evt) {
+    evt.preventDefault();
+    const commentId = evt.target.dataset.commentId;
+    const index = this._data.comments
+      .findIndex((comment) => comment.id === commentId);
+
+    const comments = [
+      ...this._data.comments.slice(0, index),
+      ...this._data.comments.slice(index + 1),
+    ];
+
+    this.updateData({comments});
+    this._callback._deleteComment(Popup.parseDataToFilm(this._data));
+  }
+
+  setDeleteCommentHandler(callback) {
+    this._callback._deleteComment = callback;
+    this._element.querySelectorAll('.film-details__comment-delete')
+      .forEach((element) => element.addEventListener('click', this._deleteCommentHandler));
+  }
+
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback._favoriteClick();
+    this._callback._favoriteClick(this._data);
+    this.updateData({isFavorites: !this._data.isFavorites});
   }
 
   _historyClickHandler(evt) {
     evt.preventDefault();
-    this._callback._historyClick();
+    this._callback._historyClick(this._data);
+    this.updateData({isHistory: !this._data.isHistory});
   }
 
   _watchlistClickHandler(evt) {
     evt.preventDefault();
-    this._callback._watchlistClick();
+    this._callback._watchlistClick(this._data);
+    this.updateData({isWatchlist: !this._data.isWatchlist});
   }
 
   _popupCloseClick(evt) {
@@ -306,7 +368,7 @@ export default class Popup extends SmartView {
   _newCommentInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      newComment: evt.target.value,
+      newText: evt.target.value,
     }, true);
   }
 
@@ -326,7 +388,7 @@ export default class Popup extends SmartView {
       film,
       {
         isComments: film.comments.length !== 0,
-        newComment: '',
+        newText: '',
       },
     );
   }
@@ -339,7 +401,8 @@ export default class Popup extends SmartView {
     }
 
     delete data.isComments;
-
+    delete data.emojy;
+    delete data.newText;
     return data;
   }
 }
