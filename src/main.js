@@ -6,7 +6,6 @@ import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
 import {generateFilm} from './mock/film-data.js';
 import {RenderPosition, render} from './utils/render.js';
-// import {FilterType} from './const.js';
 
 const NUMBER_ALL_MOVIES = 15;
 
