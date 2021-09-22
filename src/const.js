@@ -21,8 +21,3 @@ export const FilterType = {
   FAVORITES: 'Favorites',
   STATISTICS: 'Stats',
 };
-
-export const MenuItem = {
-  FILMS: 'FILMS',
-  STATISTICS: 'STATISTICS',
-};

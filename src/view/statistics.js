@@ -1,71 +1,50 @@
+import SmartView from './smart';
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import dayjs from 'dayjs';
 const BAR_HEIGHT = 50;
-const statisticCtx = document.querySelector('.statistic__chart');
 
-// Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
-statisticCtx.height = BAR_HEIGHT * 5;
-
-const myChart = new Chart(statisticCtx, {
-  plugins: [ChartDataLabels],
-  type: 'horizontalBar',
-  data: {
-    labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
-    datasets: [{
-      data: [11, 8, 7, 4, 3],
-      backgroundColor: '#ffe800',
-      hoverBackgroundColor: '#ffe800',
-      anchor: 'start',
-    }],
-  },
-  options: {
-    plugins: {
-      datalabels: {
-        font: {
-          size: 20,
-        },
-        color: '#ffffff',
+const renderStatisticChart = (statisticCtx) => (
+  new Chart(statisticCtx, {
+    plugins: [ChartDataLabels],
+    type: 'horizontalBar',
+    data: {
+      labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
+      datasets: [{
+        data: [11, 8, 7, 4, 3],
+        backgroundColor: '#ffe800',
+        hoverBackgroundColor: '#ffe800',
         anchor: 'start',
-        align: 'start',
-        offset: 40,
-      },
+      }],
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          fontColor: '#ffffff',
-          padding: 100,
-          fontSize: 20,
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false,
-        },
+    options: {
+      plugins: {datalabels: {
+        font: {size: 20}, color: '#ffffff', anchor: 'start', align: 'start', offset: 40,
+      },
+      },
+      scales: {yAxes: [{
+        ticks: {fontColor: '#ffffff', padding: 100, fontSize: 20},
+        gridLines: { display: false, drawBorder: false },
         barThickness: 24,
       }],
       xAxes: [{
-        ticks: {
-          display: false,
-          beginAtZero: true,
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false,
-        },
+        ticks: {display: false, beginAtZero: true},
+        gridLines: { display: false, drawBorder: false },
       }],
+      },
+      legend: {display: false},
+      tooltips: {enabled: false},
     },
-    legend: {
-      display: false,
-    },
-    tooltips: {
-      enabled: false,
-    },
-  },
-});
+  })
+);
 
-const createStatisticsTemplate = () => (`<section class="statistic">
+
+const createStatisticsTemplate = () => (
+  `<section class="statistic">
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">Movie buff</span>
+    <span class="statistic__rank-label">novaice</span>
   </p>
 
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -107,3 +86,53 @@ const createStatisticsTemplate = () => (`<section class="statistic">
   </div>
 
 </section>`);
+
+export default class Statistics extends SmartView {
+  constructor(films) {
+    super();
+
+    this._data = {
+      films,
+      dateFrom: (() => {
+        const daysToFullWeek = 6;
+        return dayjs().subtract(daysToFullWeek, 'day').toDate();
+      })(),
+      dateTo: dayjs().toDate(),
+    };
+
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
+
+    this._setCharts();
+  }
+
+  removeElement() {
+    super.removeElement();
+  }
+
+  getTemplate() {
+    return createStatisticsTemplate(this._data);
+  }
+
+  updateElement() {
+    super.updateElement();
+    this._setCharts();
+  }
+
+  _dateChangeHandler([dateFrom, dateTo]) {
+    if (!dateFrom || !dateTo) {
+      return;
+    }
+
+    this.updateData({
+      dateFrom,
+      dateTo,
+    });
+  }
+
+  _setCharts() {
+    const statisticCtx = this.getElement().querySelector('.statistic__chart');
+    statisticCtx.height = BAR_HEIGHT * 5;
+
+    this._statisticChart = renderStatisticChart(statisticCtx);
+  }
+}
