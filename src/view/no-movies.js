@@ -8,8 +8,8 @@ const NoFilmsTextType = {
   [FilterType.FAVORITES]: 'There are no favorite movies now',
 };
 
-const createNoMoviesTemplate = (type) => {
-  const noFilmTextValue = NoFilmsTextType[type];
+const createNoMoviesTemplate = (filterType) => {
+  const noFilmTextValue = NoFilmsTextType[filterType];
 
   return `<h2 class="films-list__title">${noFilmTextValue}</h2>`;
 };
@@ -22,14 +22,5 @@ export default class NoMoviesText extends AbstractView {
 
   getTemplate() {
     return createNoMoviesTemplate(this._data);
-  }
-
-  _tabChangeCallback(evt) {
-    this._tab = `${evt.newURL.split('#')[1]}`;
-    this._element.textContent = this._getText();
-  }
-
-  setHashchangeListener() {
-    window.addEventListener('hashchange', this._tabChangeCallback);
   }
 }

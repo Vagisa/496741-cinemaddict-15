@@ -69,16 +69,8 @@ export default class FilmList {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    switch (actionType) {
-      case UserAction.UPDATE_FILM:
-        this._filmsModel.updateFilm(updateType, update);
-        break;
-      case UserAction.ADD_FILM:
-        this._filmsModel.addFilm(updateType, update);
-        break;
-      case UserAction.DELETE_FILM:
-        this._filmsModel.deleteFilm(updateType, update);
-        break;
+    if (actionType === UserAction.UPDATE_FILM) {
+      this._filmsModel.updateFilm(updateType, update);
     }
   }
 
@@ -137,7 +129,7 @@ export default class FilmList {
   }
 
   _renderNoFilmsText() {
-    this._noMoviesTextComponent = new NoMoviesTextView();
+    this._noMoviesTextComponent = new NoMoviesTextView(this._filterType);
     render(this._contentContainer, this._contentComponent, RenderPosition.BEFOREEND);
     render(this._contentComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
     render(this._filmsListComponent, this._noMoviesTextComponent, RenderPosition.BEFOREEND);
@@ -158,6 +150,7 @@ export default class FilmList {
     this._filmPresenter.clear();
 
     remove(this._filmsContainerComponent);
+    remove(this._noMoviesTextComponent);
     remove(this._sortComponent);
     remove(this._oldExtraComponent);
     remove(this._filmsExtraComponent);
@@ -187,10 +180,14 @@ export default class FilmList {
     render(this._contentComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
     render(this._filmsListComponent, this._filmsContainerComponent, RenderPosition.BEFOREEND);
 
-    const topRatedFilms =this._getFilms().sort((first, second) => (second.rating - first.rating)).slice(0, NUMBER_TOP_RATED);
+    const topRatedFilms = this._filmsModel.getFilms()
+      .sort((first, second) => (second.rating - first.rating))
+      .slice(0, NUMBER_TOP_RATED);
     this._renderFilmListExtra(topRatedFilms, 'Top rated');
 
-    const mostCommentedFilms = this._getFilms().sort((first, second) => (second.comments.length - first.comments.length)).slice(0, NUMBER_MOST_COMMENTED);
+    const mostCommentedFilms = this._filmsModel.getFilms()
+      .sort((first, second) => (second.comments.length - first.comments.length))
+      .slice(0, NUMBER_MOST_COMMENTED);
     this._renderFilmListExtra(mostCommentedFilms, 'Most commented');
   }
 
