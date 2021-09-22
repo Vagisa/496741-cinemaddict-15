@@ -6,6 +6,7 @@ import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
 import {generateFilm} from './mock/film-data.js';
 import {RenderPosition, render} from './utils/render.js';
+import {MenuItem} from './const.js';
 
 const NUMBER_ALL_MOVIES = 15;
 
@@ -24,8 +25,18 @@ const footerStatisticsElement = siteFooterElement.querySelector('.footer__statis
 render(siteHeaderElement, new RatingView(moviesData), RenderPosition.BEFOREEND);
 
 const filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel);
-
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
+
+const handleSiteMenuClick = (menuItem) => {
+  if (menuItem === MenuItem.STATISTICS) {
+    filmsPresenter.destroy();
+    //показать статистику
+    return;
+  }
+  filmsPresenter.init();
+  //скрыть статистику
+};
+
 
 filterPresenter.init();
 filmsPresenter.init();

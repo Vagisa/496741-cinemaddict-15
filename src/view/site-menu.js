@@ -19,7 +19,7 @@ const createMenuTemplate = (filterItems, currentFilterType) => {
     <div class="main-navigation__items">
       ${filterItemsTemplate}
     </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>
+    <a href="#stats" class="main-navigation__additional ${currentFilterType === 'Stats' ? 'main-navigation__additional--active' : ''}" data-filter-type="Stats">Stats</a>
   </nav>`;
 };
 

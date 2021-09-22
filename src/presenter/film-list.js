@@ -47,12 +47,21 @@ export default class FilmList {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._closePopup = this._closePopup.bind(this);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
     this._renderContent();
+  }
+
+  destroy() {
+    this._clearContent({resetRenderFilmCount: true, resetSortType: true});
+    remove(this._filmsListComponent);
+    remove(this._filmsExtraComponent);
+    remove(this._contentComponent);
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _getFilms() {
