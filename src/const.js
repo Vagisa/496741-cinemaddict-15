@@ -19,4 +19,5 @@ export const FilterType = {
   WATCHLIST: 'Watchlist',
   HISTTORY: 'History',
   FAVORITES: 'Favorites',
+  STATISTICS: 'Stats',
 };
