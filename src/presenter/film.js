@@ -1,5 +1,6 @@
 import FilmCardView from '../view/film-card-view.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 export default class Film {
   constructor(
@@ -31,7 +32,6 @@ export default class Film {
     this._filmComponent.setEscKeyDown(() => this._popupClose(this._film));
 
     if (prevfilmComponent === null) {
-
       render(this._filmContainer, this._filmComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -49,6 +49,8 @@ export default class Film {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -61,6 +63,8 @@ export default class Film {
 
   _handleHistoryClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -73,6 +77,8 @@ export default class Film {
 
   _handleWatchlistClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
