@@ -12,6 +12,7 @@ const renderStatisticChart = (statisticCtx) => (
       labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
       datasets: [{
         data: [11, 8, 7, 4, 3],
+        barThickness: 24,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -25,7 +26,6 @@ const renderStatisticChart = (statisticCtx) => (
       scales: {yAxes: [{
         ticks: {fontColor: '#ffffff', padding: 100, fontSize: 20},
         gridLines: { display: false, drawBorder: false },
-        barThickness: 24,
       }],
       xAxes: [{
         ticks: {display: false, beginAtZero: true},
@@ -39,12 +39,12 @@ const renderStatisticChart = (statisticCtx) => (
 );
 
 
-const createStatisticsTemplate = () => (
+const createStatisticsTemplate = ({films}, duration) => (
   `<section class="statistic">
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">novaice</span>
+    <span class="statistic__rank-label">Movie buff</span>
   </p>
 
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -69,11 +69,11 @@ const createStatisticsTemplate = () => (
   <ul class="statistic__text-list">
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">You watched</h4>
-      <p class="statistic__item-text">22 <span class="statistic__item-description">movies</span></p>
+      <p class="statistic__item-text">${films.historyFilms().length}<span class="statistic__item-description">movies</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Total duration</h4>
-      <p class="statistic__item-text">130 <span class="statistic__item-description">h</span> 22 <span class="statistic__item-description">m</span></p>
+      <p class="statistic__item-text">${duration.format('H')}<span class="statistic__item-description">h</span> 22 <span class="statistic__item-description">m</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Top genre</h4>
@@ -99,10 +99,15 @@ export default class Statistics extends SmartView {
       })(),
       dateTo: dayjs().toDate(),
     };
+    this._duration = this._historyFilmsDuration();
 
+    this.updateElement = this.updateElement.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
+    this._historyFilmsDuration = this._historyFilmsDuration.bind(this);
 
     this._setCharts();
+
+    films.addObserver(this.updateElement);
   }
 
   removeElement() {
@@ -110,7 +115,7 @@ export default class Statistics extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._data);
+    return createStatisticsTemplate(this._data, this._duration);
   }
 
   updateElement() {
@@ -134,5 +139,12 @@ export default class Statistics extends SmartView {
     statisticCtx.height = BAR_HEIGHT * 5;
 
     this._statisticChart = renderStatisticChart(statisticCtx);
+  }
+
+  _historyFilmsDuration() {
+    const durationMinuts = this._data.films.getFilms()
+      .filter((film) => film.isHistory)
+      .reduce((first, second) => first.duration + second.duration);
+    return dayjs.duration({minutes: durationMinuts});
   }
 }

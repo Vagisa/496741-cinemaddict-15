@@ -14,6 +14,10 @@ export default class Films extends AbstractObserver {
     return this._films;
   }
 
+  historyFilms() {
+    return this._films.filter((film) => film.isHistory);
+  }
+
   updateFilm(updateType, update) {
     const index = this._films.findIndex((film) => film.id === update.id);
 

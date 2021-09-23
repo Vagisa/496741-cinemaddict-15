@@ -7,7 +7,6 @@ import FilmsContainerView from '../view/films-container.js';
 import NoMoviesTextView from '../view/no-movies.js';
 import FilmPresenter from './film.js';
 import PopupView from '../view/popup.js';
-import StatisticsView from '../view/statistics.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import {filter} from '../utils/filter.js';
@@ -29,7 +28,6 @@ export default class FilmList {
     this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
 
-    this._staticticsComponent = null;
     this._showMoreBtnComponent = null;
     this._filmsExtraComponent = null;
     this._oldExtraComponent = null;
@@ -121,12 +119,6 @@ export default class FilmList {
   }
 
   _renderContent() {
-    if (this._filterType === FilterType.STATISTICS) {
-      this._staticticsComponent = new StatisticsView(this._getFilms());
-      render(this._contentContainer, this._staticticsComponent, RenderPosition.BEFOREEND);
-      return;
-    }
-    remove(this._staticticsComponent);
     const films = this._getFilms();
     const filmCount = films.length;
     if (filmCount === 0) {
@@ -140,10 +132,6 @@ export default class FilmList {
     if (filmCount > this._renderedFilmsCount) {
       this._renderShowMoreBtn();
     }
-  }
-
-  _renderStatistic() {
-
   }
 
   _renderNoFilmsText() {

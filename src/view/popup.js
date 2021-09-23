@@ -8,7 +8,7 @@ import {nanoid} from 'nanoid';
 dayjs.extend(durationPlugin);
 dayjs.extend(relativeTime);
 
-const createCommentTemplte = (comment) => {
+const createCommentTemplate = (comment) => {
   const {
     id,
     author,
@@ -49,7 +49,7 @@ const createPopupCommentsTemplate = (
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
-      ${comments.map((comment) => createCommentTemplte(comment)).join('')}
+      ${comments.map((comment) => createCommentTemplate(comment)).join('')}
     </ul>
 
     <div class="film-details__new-comment">

@@ -1,13 +1,14 @@
-import FilterView from '../view/site-menu';
-import {render, RenderPosition, replace, remove} from '../utils/render';
-import {filter} from '../utils/filter';
-import {FilterType, UpdateType} from '../const';
+import FilterView from '../view/filter.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {filter} from '../utils/filter.js';
+import {FilterType, UpdateType} from '../const.js';
 
 export default class Filter {
-  constructor (filterContainer, filterModel, filmsModel) {
+  constructor (filterContainer, filterModel, filmsModel, menuModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
+    this._menuModel = menuModel;
     this._currentFilterType = FilterType.ALL;
 
     this._filterComponent = null;
@@ -17,6 +18,7 @@ export default class Filter {
 
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+    this._menuModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -27,13 +29,21 @@ export default class Filter {
       this._handleFilterTypeChange(filterType);
     });
 
+    this._filterComponent.setMenuClickHandler((menuItem) => {
+      this._menuModel.setFilter(UpdateType.MAJOR, menuItem);
+    });
+
     if(prevFilterComponent === null) {
-      render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
+      render(this._filterContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
       return;
     }
 
     replace (this._filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  destroy() {
+    remove(this._filterComponent);
   }
 
   _handleModelEvent() {
