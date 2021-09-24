@@ -29,35 +29,26 @@ const footerStatisticsElement = siteFooterElement.querySelector('.footer__statis
 render(siteHeaderElement, new RatingView(moviesData), RenderPosition.BEFOREEND);
 const siteMenuComponent = new MenuView();
 render(siteMainElement, siteMenuComponent, RenderPosition.BEFOREEND);
-const filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel);
+let filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteMenuComponent, filterModel, filmsModel, menuModel);
+let statisticComponent;
 
 const handleSiteMenuClick = (menuItem) => {
-  // if (menuModel.getFilter() === menuItem) {
-  //   return;
-  // }
-  console.log(menuItem);
   menuModel.setFilter(UpdateType.MAJOR, menuItem);
-  const statisticComponent = new StatisticsView(filmsModel);
-  const newSiteMenuComponent = new MenuView(menuItem);
-  const newFilterPresenter = new FilterPresenter(newSiteMenuComponent, filterModel, filmsModel, menuModel);
-  newSiteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-
-  menuModel.setFilter(UpdateType.MAJOR, menuItem);
-
   switch (menuItem ) {
     case MenuItem.STATISTICS: {
-      remove(siteMenuComponent);
-      render(siteMainElement, newSiteMenuComponent, RenderPosition.BEFOREEND);
-      filmsPresenter.destroyContent();
-      filterPresenter.destroy();
-      newFilterPresenter.init();
+      filmsPresenter.destroy();
+      statisticComponent = new StatisticsView(filmsModel);
       render(siteMainElement, statisticComponent, RenderPosition.BEFOREEND);
       break;
     }
     case MenuItem.FILMS:
-      remove(statisticComponent);
-      remove(newSiteMenuComponent);
+      if (statisticComponent) {
+        statisticComponent.destroy();
+        remove(statisticComponent);
+      }
+      filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel);
+      filmsPresenter.init();
       break;
   }
 };

@@ -2,16 +2,21 @@ import SmartView from './smart';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
+import dayjsDurationPlugin from 'dayjs/plugin/duration';
+import { remove } from '../utils/render';
+
+dayjs.extend(dayjsDurationPlugin);
+
 const BAR_HEIGHT = 50;
 
-const renderStatisticChart = (statisticCtx) => (
+const renderStatisticChart = (statisticCtx, stats) => (
   new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
+      labels: stats.favoritGenres.map((genre) => genre[0]),
       datasets: [{
-        data: [11, 8, 7, 4, 3],
+        data: stats.favoritGenres.map((genre) => genre[1]),
         barThickness: 24,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
@@ -39,7 +44,7 @@ const renderStatisticChart = (statisticCtx) => (
 );
 
 
-const createStatisticsTemplate = ({films}, duration) => (
+const createStatisticsTemplate = (stats) => (
   `<section class="statistic">
   <p class="statistic__rank">
     Your rank
@@ -69,15 +74,15 @@ const createStatisticsTemplate = ({films}, duration) => (
   <ul class="statistic__text-list">
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">You watched</h4>
-      <p class="statistic__item-text">${films.historyFilms().length}<span class="statistic__item-description">movies</span></p>
+      <p class="statistic__item-text">${stats.historyFilmsCount}<span class="statistic__item-description">movies</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Total duration</h4>
-      <p class="statistic__item-text">${duration.format('H')}<span class="statistic__item-description">h</span> 22 <span class="statistic__item-description">m</span></p>
+      <p class="statistic__item-text"> ${stats.historyFilmsDuration.format('HH')} <span class="statistic__item-description">h</span> ${stats.historyFilmsDuration.format('mm')} <span class="statistic__item-description">m</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Top genre</h4>
-      <p class="statistic__item-text">Sci-Fi</p>
+      <p class="statistic__item-text">${stats.mostFavoritGenre}</p>
     </li>
   </ul>
 
@@ -99,23 +104,21 @@ export default class Statistics extends SmartView {
       })(),
       dateTo: dayjs().toDate(),
     };
-    this._duration = this._historyFilmsDuration();
 
     this.updateElement = this.updateElement.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
-    this._historyFilmsDuration = this._historyFilmsDuration.bind(this);
+    this._getStatsData = this._getStatsData.bind(this);
 
     this._setCharts();
-
     films.addObserver(this.updateElement);
   }
 
-  removeElement() {
-    super.removeElement();
+  destroy() {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._data, this._duration);
+    const stats = this._getStatsData();
+    return createStatisticsTemplate(stats);
   }
 
   updateElement() {
@@ -134,17 +137,35 @@ export default class Statistics extends SmartView {
     });
   }
 
+  restoreHandlers() {
+  }
+
   _setCharts() {
     const statisticCtx = this.getElement().querySelector('.statistic__chart');
     statisticCtx.height = BAR_HEIGHT * 5;
-
-    this._statisticChart = renderStatisticChart(statisticCtx);
+    const stats = this._getStatsData();
+    this._statisticChart = renderStatisticChart(statisticCtx, stats);
   }
 
-  _historyFilmsDuration() {
-    const durationMinuts = this._data.films.getFilms()
-      .filter((film) => film.isHistory)
-      .reduce((first, second) => first.duration + second.duration);
-    return dayjs.duration({minutes: durationMinuts});
+  _getStatsData() {
+    const historyFilms = this._data.films.getFilms().filter((film) => film.isHistory);
+    const durationMinuts = historyFilms.reduce((sum, film) => sum + film.duration, 0);
+    const genresCounters = {};
+    historyFilms.forEach((film) => {
+      film.genres.forEach((genre) => {
+        if (!(genre in genresCounters)) {
+          genresCounters[genre] = 0;
+        }
+        genresCounters[genre] += 1;
+      });
+    });
+    const favoritGenres = Object.entries(genresCounters).sort((a, b) => b[1] - a[1]);
+    const mostFavoritGenre = favoritGenres[0][0];
+    return {
+      historyFilmsCount: historyFilms.length,
+      historyFilmsDuration: dayjs.duration(durationMinuts, 'minutes'),
+      mostFavoritGenre,
+      favoritGenres,
+    };
   }
 }

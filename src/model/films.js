@@ -1,4 +1,5 @@
 import AbstractObserver from '../utils/abstract-observer.js';
+import dayjs from 'dayjs';
 
 export default class Films extends AbstractObserver {
   constructor() {
@@ -12,10 +13,6 @@ export default class Films extends AbstractObserver {
 
   getFilms() {
     return this._films;
-  }
-
-  historyFilms() {
-    return this._films.filter((film) => film.isHistory);
   }
 
   updateFilm(updateType, update) {

@@ -54,11 +54,14 @@ export default class FilmList {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  destroyContent() {
+  destroy() {
+    this._clearContent();
     remove(this._sortComponent);
     remove(this._filmsListComponent);
     remove(this._filmsExtraComponent);
     remove(this._contentComponent);
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _getFilms() {
