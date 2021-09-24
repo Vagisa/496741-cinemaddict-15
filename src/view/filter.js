@@ -12,24 +12,30 @@ const createFilterTemplate = (filter, currentFilterType) => {
     </a>`);
 };
 
-const createFiltersTemplate = (filters, currentFilterType) => {
+const createFiltersTemplate = (filters, currentFilterType, currentPage) => {
   const filterItemsTemplate = filters
     .map((filter) => createFilterTemplate(filter, currentFilterType)).join('');
-  return `<div class="main-navigation__items">
-    ${filterItemsTemplate}</div>`;
+  return `<nav class="main-navigation">
+      <div class="main-navigation__items">
+        ${filterItemsTemplate}
+      </div>
+      <a href="#stats" class="main-navigation__additional ${currentPage === MenuItem.STATISTICS ? 'main-navigation__additional--active' : ''}"
+      data-menu-item="${MenuItem.STATISTICS}">Stats</a>
+    </nav>`;
 };
 
 export default class Filter extends AbstractView {
-  constructor(filters, currentFilterType) {
+  constructor(filters, currentFilterType, currentPage) {
     super();
     this._filters = filters;
     this._currentFilter = currentFilterType;
+    this._currentPage = currentPage;
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
     this._menuClickHandler = this._menuClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createFiltersTemplate(this._filters, this._currentFilter);
+    return createFiltersTemplate(this._filters, this._currentFilter, this._currentPage);
   }
 
   _filterTypeChangeHandler(evt) {
@@ -37,7 +43,10 @@ export default class Filter extends AbstractView {
       return;
     }
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.filterType);
+    const filterType = evt.target.dataset.filterType;
+    if (filterType) {
+      this._callback.filterTypeChange(filterType);
+    }
   }
 
   setFilterTypeChangeHandler(callback) {
@@ -52,6 +61,8 @@ export default class Filter extends AbstractView {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
-    this._callback.menuClick(evt.target.dataset.menuItem);
+    const currentPage = evt.target.dataset.menuItem;
+    this._currentPage = currentPage;
+    this._callback.menuClick(currentPage);
   }
 }

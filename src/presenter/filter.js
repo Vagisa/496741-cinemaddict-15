@@ -1,15 +1,17 @@
 import FilterView from '../view/filter.js';
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {filter} from '../utils/filter.js';
-import {FilterType, UpdateType} from '../const.js';
+import {FilterType, MenuItem, UpdateType} from '../const.js';
 
 export default class Filter {
-  constructor (filterContainer, filterModel, filmsModel, menuModel) {
+  constructor (filterContainer, filterModel, filmsModel, menuClickHandler) {
+    this._callback = {};
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
-    this._menuModel = menuModel;
+    this._menuClickHandler = menuClickHandler;
     this._currentFilterType = FilterType.ALL;
+    this._currentPage = MenuItem.FILMS;
 
     this._filterComponent = null;
 
@@ -18,28 +20,30 @@ export default class Filter {
 
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
-    this._menuModel.addObserver(this._handleModelEvent);
+
+    menuClickHandler(this._currentPage);
   }
 
   init() {
     const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
-    this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
+    this._filterComponent = new FilterView(filters, this._filterModel.getFilter(), this._currentPage);
     this._filterComponent.setFilterTypeChangeHandler((filterType) => {
       this._handleFilterTypeChange(filterType);
     });
-
-    this._filterComponent.setMenuClickHandler((menuItem) => {
-      this._menuModel.setFilter(UpdateType.MAJOR, menuItem);
+    this._filterComponent.setMenuClickHandler((page) => {
+      if (page !== this._currentPage) {
+        this._menuClickHandler(page);
+        this._currentPage = page;
+        this.init();
+      }
     });
 
-    if(prevFilterComponent === null) {
+    if (prevFilterComponent) {
+      replace(this._filterComponent, prevFilterComponent);
+    } else {
       render(this._filterContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
-      return;
     }
-
-    replace (this._filterComponent, prevFilterComponent);
-    remove(prevFilterComponent);
   }
 
   destroy() {
@@ -54,7 +58,6 @@ export default class Filter {
     if (this._filterModel.getFilter() === filterType) {
       return;
     }
-
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 

@@ -3,7 +3,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
 import dayjsDurationPlugin from 'dayjs/plugin/duration';
-import { remove } from '../utils/render';
+import { DateRanges } from '../const';
 
 dayjs.extend(dayjsDurationPlugin);
 
@@ -44,7 +44,7 @@ const renderStatisticChart = (statisticCtx, stats) => (
 );
 
 
-const createStatisticsTemplate = (stats) => (
+const createStatisticsTemplate = (stats, dateRange) => (
   `<section class="statistic">
   <p class="statistic__rank">
     Your rank
@@ -55,19 +55,19 @@ const createStatisticsTemplate = (stats) => (
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
     <p class="statistic__filters-description">Show stats:</p>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" ${dateRange === DateRanges.ALL_TIME ? 'checked' : ''}>
     <label for="statistic-all-time" class="statistic__filters-label">All time</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today" ${dateRange === DateRanges.TODAY ? 'checked' : ''}>
     <label for="statistic-today" class="statistic__filters-label">Today</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week" ${dateRange === DateRanges.WEEK ? 'checked' : ''}>
     <label for="statistic-week" class="statistic__filters-label">Week</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month" ${dateRange === DateRanges.MONTH ? 'checked' : ''}>
     <label for="statistic-month" class="statistic__filters-label">Month</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year" ${dateRange === DateRanges.YEAR ? 'checked' : ''}>
     <label for="statistic-year" class="statistic__filters-label">Year</label>
   </form>
 
@@ -98,19 +98,19 @@ export default class Statistics extends SmartView {
 
     this._data = {
       films,
-      dateFrom: (() => {
-        const daysToFullWeek = 6;
-        return dayjs().subtract(daysToFullWeek, 'day').toDate();
-      })(),
-      dateTo: dayjs().toDate(),
+      dateFrom: null,
+      dateTo: null,
+      dateRange: DateRanges.ALL_TIME,
     };
 
     this.updateElement = this.updateElement.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
     this._getStatsData = this._getStatsData.bind(this);
+    this._handleDateClick = this._handleDateClick.bind(this);
 
     this._setCharts();
     films.addObserver(this.updateElement);
+    this.restoreHandlers();
   }
 
   destroy() {
@@ -118,7 +118,7 @@ export default class Statistics extends SmartView {
 
   getTemplate() {
     const stats = this._getStatsData();
-    return createStatisticsTemplate(stats);
+    return createStatisticsTemplate(stats, this._data.dateRange);
   }
 
   updateElement() {
@@ -138,6 +138,50 @@ export default class Statistics extends SmartView {
   }
 
   restoreHandlers() {
+    this.getElement()
+      .querySelectorAll('.statistic__filters-input')
+      .forEach((el) => el.addEventListener('click', this._handleDateClick));
+  }
+
+  _handleDateClick(evt) {
+    const period = evt.target.value;
+    switch(period) {
+      case DateRanges.ALL_TIME:
+        this.updateData({
+          dateFrom: null,
+          dateTo: null,
+          dateRange: period,
+        });
+        break;
+      case DateRanges.TODAY:
+        this.updateData({
+          dateFrom: dayjs().startOf('day'),
+          dateTo: dayjs().toDate(),
+          dateRange: period,
+        });
+        break;
+      case DateRanges.WEEK:
+        this.updateData({
+          dateFrom: dayjs().startOf('week'),
+          dateTo: dayjs().toDate(),
+          dateRange: period,
+        });
+        break;
+      case DateRanges.MONTH:
+        this.updateData({
+          dateFrom: dayjs().startOf('month'),
+          dateTo: dayjs().toDate(),
+          dateRange: period,
+        });
+        break;
+      case DateRanges.YEAR:
+        this.updateData({
+          dateFrom: dayjs().startOf('year'),
+          dateTo: dayjs().toDate(),
+          dateRange: period,
+        });
+        break;
+    }
   }
 
   _setCharts() {
@@ -148,7 +192,9 @@ export default class Statistics extends SmartView {
   }
 
   _getStatsData() {
-    const historyFilms = this._data.films.getFilms().filter((film) => film.isHistory);
+    const filmsInDataRange = this._data.films.getFilms()
+      .filter((film) => (!this._data.dateFrom || film.date >= this._data.dateFrom) && (!this._data.dateTo || film.date <= this._data.dateTo));
+    const historyFilms = filmsInDataRange.filter((film) => film.isHistory);
     const durationMinuts = historyFilms.reduce((sum, film) => sum + film.duration, 0);
     const genresCounters = {};
     historyFilms.forEach((film) => {
@@ -160,7 +206,10 @@ export default class Statistics extends SmartView {
       });
     });
     const favoritGenres = Object.entries(genresCounters).sort((a, b) => b[1] - a[1]);
-    const mostFavoritGenre = favoritGenres[0][0];
+    let mostFavoritGenre = 'Not known';
+    if (favoritGenres.length) {
+      mostFavoritGenre = favoritGenres[0][0];
+    }
     return {
       historyFilmsCount: historyFilms.length,
       historyFilmsDuration: dayjs.duration(durationMinuts, 'minutes'),
