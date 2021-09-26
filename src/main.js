@@ -21,7 +21,7 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
 
-const filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel);
+const filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel, api);
 let statisticComponent;
 
 const handleSiteMenuClick = (menuItem) => {
@@ -53,6 +53,7 @@ api.getFilms()
     render(footerStatisticsElement, new NumberFilmsView(filmsModel), RenderPosition.BEFOREEND);
   })
   .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
     render(siteHeaderElement, new RatingView(filmsModel), RenderPosition.BEFOREEND);
     render(footerStatisticsElement, new NumberFilmsView(filmsModel), RenderPosition.BEFOREEND);
   });

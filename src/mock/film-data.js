@@ -109,7 +109,7 @@ const pikUpPosterForMovie = (title) => {
 const generateComment = () => ({
   id: nanoid(),
   author: getRandomArrayElement(commentAuthors),
-  commentOnFilm: getRandomArrayElement(commentTexts),
+  comment: getRandomArrayElement(commentTexts),
   date: generateDate(),
   emotion: getRandomArrayElement(filmEmotions),
 });

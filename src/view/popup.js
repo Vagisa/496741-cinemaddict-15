@@ -8,14 +8,13 @@ import {nanoid} from 'nanoid';
 dayjs.extend(durationPlugin);
 dayjs.extend(relativeTime);
 
-const createCommentTemplate = (comment) => {
-  const {
-    id,
-    author,
-    commentOnFilm,
-    date,
-    emotion,
-  } = comment;
+const createCommentTemplate = ({
+  id,
+  author,
+  comment,
+  date,
+  emotion,
+}) => {
   const commentDate = dayjs(date).fromNow();
 
   return `<li class="film-details__comment">
@@ -23,7 +22,7 @@ const createCommentTemplate = (comment) => {
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
     <div>
-      <p class="film-details__comment-text">${commentOnFilm}</p>
+      <p class="film-details__comment-text">${comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
@@ -271,7 +270,7 @@ export default class Popup extends SmartView {
       const comment = {
         id: nanoid(),
         author: 'User',
-        commentOnFilm: commentText,
+        comment: commentText,
         date: dayjs().toISOString(),
         emotion: this._data.emojy,
       };

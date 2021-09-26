@@ -18,7 +18,7 @@ const NUMBER_TOP_RATED = 2;
 const NUMBER_MOST_COMMENTED = 2;
 
 export default class FilmList {
-  constructor(contentContainer, filmsModel, filterModel) {
+  constructor(contentContainer, filmsModel, filterModel, api) {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._contentContainer = contentContainer;
@@ -29,6 +29,7 @@ export default class FilmList {
     this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
+    this._api = api;
 
     this._showMoreBtnComponent = null;
     this._filmsExtraComponent = null;
@@ -81,9 +82,24 @@ export default class FilmList {
     return filteredFilms;
   }
 
-  _handleViewAction(actionType, updateType, update) {
-    if (actionType === UserAction.UPDATE_FILM) {
-      this._filmsModel.updateFilm(updateType, update);
+  _handleViewAction(actionType, updateType, update, film) {
+    switch (actionType) {
+      case UserAction.UPDATE_FILM:
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
+        break;
+      case UserAction.ADD_COMMENT:
+        this._api.addComment(update, film)
+          .then((response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          });
+        break;
+      case UserAction.DELETE_COMMENT:
+        this._api.deleteComment(update).then(() => {
+          this._filmsModel.updateFilm(updateType, update);
+        });
+        break;
     }
   }
 
