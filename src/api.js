@@ -54,7 +54,7 @@ export default class Api {
       response.status < SuccessHTTPStatusRange.MIN ||
       response.status > SuccessHTTPStatusRange.MAX
     ) {
-      throw new Error (`${response.status}: ${response.statusText}`)
+      throw new Error (`${response.status}: ${response.statusText}`);
     }
 
     return response;

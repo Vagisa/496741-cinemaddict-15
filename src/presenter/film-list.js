@@ -4,6 +4,7 @@ import ShowMoreBtnView from '../view/show-more-button.js';
 import FilmsListView from '../view/film-list.js';
 import FilmsExtraView from '../view/film-list-extra.js';
 import FilmsContainerView from '../view/films-container.js';
+import LoadingView from '../view/loading.js';
 import NoMoviesTextView from '../view/no-movies.js';
 import FilmPresenter from './film.js';
 import PopupView from '../view/popup.js';
@@ -27,6 +28,7 @@ export default class FilmList {
     this._filmPresenter = new Map();
     this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._showMoreBtnComponent = null;
     this._filmsExtraComponent = null;
@@ -36,6 +38,7 @@ export default class FilmList {
     this._contentComponent = new ContentView();
     this._filmsListComponent = new FilmsListView();
     this._filmsContainerComponent = new FilmsContainerView();
+    this._loadingComponent = new LoadingView();
 
     this._renderPopup = this._renderPopup.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -62,6 +65,7 @@ export default class FilmList {
     remove(this._contentComponent);
     this._filmsModel.removeObserver(this._handleModelEvent);
     this._filterModel.removeObserver(this._handleModelEvent);
+    this._filterModel.setFilter(FilterType.ALL);
   }
 
   _getFilms() {
@@ -96,6 +100,11 @@ export default class FilmList {
         this._clearContent({resetRenderFilmCount: true, resetSortType: true});
         this._renderContent();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderContent();
+        break;
     }
   }
 
@@ -122,6 +131,10 @@ export default class FilmList {
   }
 
   _renderContent() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     const films = this._getFilms();
     const filmCount = films.length;
     if (filmCount === 0) {
@@ -135,6 +148,12 @@ export default class FilmList {
     if (filmCount > this._renderedFilmsCount) {
       this._renderShowMoreBtn();
     }
+  }
+
+  _renderLoading() {
+    render(this._contentContainer, this._contentComponent, RenderPosition.BEFOREEND);
+    render(this._contentComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
+    render(this._filmsListComponent, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNoFilmsText() {
@@ -160,6 +179,7 @@ export default class FilmList {
     this._filmPresenter.clear();
 
     remove(this._filmsContainerComponent);
+    remove(this._loadingComponent);
     remove(this._noMoviesTextComponent);
     remove(this._sortComponent);
     remove(this._oldExtraComponent);

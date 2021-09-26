@@ -113,9 +113,6 @@ export default class Statistics extends SmartView {
     this.restoreHandlers();
   }
 
-  destroy() {
-  }
-
   getTemplate() {
     const stats = this._getStatsData();
     return createStatisticsTemplate(stats, this._data.dateRange);

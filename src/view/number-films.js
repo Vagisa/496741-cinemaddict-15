@@ -7,9 +7,9 @@ const createNumberFilmsTemplate = (films) => (
 );
 
 export default class NumberFilms extends AbstractView {
-  constructor(films) {
+  constructor(filmsModel) {
     super();
-    this._films = films;
+    this._films = filmsModel.getFilms();
   }
 
   getTemplate() {

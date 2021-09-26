@@ -20,6 +20,7 @@ const createFiltersTemplate = (filters, currentFilterType, currentPage) => {
         ${filterItemsTemplate}
       </div>
       <a href="#stats" class="main-navigation__additional ${currentPage === MenuItem.STATISTICS ? 'main-navigation__additional--active' : ''}"
+      data-filter-type="All movies"
       data-menu-item="${MenuItem.STATISTICS}">Stats</a>
     </nav>`;
 };

@@ -19,12 +19,12 @@ const createRatingTemplate = (films) => {
 };
 
 export default class Rating extends AbstractView {
-  constructor(films) {
+  constructor(filmsModel) {
     super();
-    this._films = films;
+    this._filmsModel = filmsModel.getFilms();
   }
 
   getTemplate() {
-    return createRatingTemplate(this._films);
+    return createRatingTemplate(this._filmsModel);
   }
 }
