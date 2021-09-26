@@ -8,16 +8,28 @@ import FilterModel from './model/filter.js';
 import {generateFilm} from './mock/film-data.js';
 import {RenderPosition, render, remove} from './utils/render.js';
 import {MenuItem} from './const.js';
+import Api from './api.js';
 
 const NUMBER_ALL_MOVIES = 15;
+const AUTHORIZATION = 'Basic lgkhj67glshlghflg';
+const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const moviesData = new Array(NUMBER_ALL_MOVIES).fill().map(generateFilm);
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getFilms().then((films) => {
+  console.log(moviesData);
+  console.log(films);
+  // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+  // а ещё на сервере используется snake_case, а у нас camelCase.
+  // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+  // Есть вариант получше - паттерн "Адаптер"
+});
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(moviesData);
 
 const filterModel = new FilterModel();
-filterModel.setFilter
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');

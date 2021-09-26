@@ -1,5 +1,4 @@
 import AbstractObserver from '../utils/abstract-observer.js';
-import dayjs from 'dayjs';
 
 export default class Films extends AbstractObserver {
   constructor() {
@@ -29,5 +28,59 @@ export default class Films extends AbstractObserver {
     ];
 
     this._notify(updateType, update);
+  }
+
+  static adaptToClient(film) {
+    const adaptedFilm = {
+      id: film.id,
+      comments: film.comments,
+      title: film['film_info'].title,
+      rating: film['film_info']['total_rating'],
+      date: film['film_info'].release.date,
+      duration: film['film_info'].runtime,
+      genres: film['film_info'].genre,
+      poster: film['film_info'].poster,
+      description: film['film_info'].description,
+      country: film['film_info'].release.release_country,
+      actors: film['film_info'].actors,
+      director: film['film_info'].director,
+      writers: film['film_info'].writers,
+      isWatchlist: film['user_details'].watchlist,
+      isHistory: film['user_details']['already_watched'],
+      isFavorites: film['user_details'].favorite,
+      watchingDate: film['user_details']['watching_date'],
+    };
+
+    return adaptedFilm;
+  }
+
+  static adaptToServer(film) {
+    const adaptedFilm = {
+      id: film.id,
+      comments: film.comments,
+      'film_info': {
+        title: film.title,
+        'total_rating': film.rating,
+        runtime: film.duration,
+        genre: film.genres,
+        poster: film.poster,
+        description: film.description,
+        actors: film.actors,
+        director: film.director,
+        writers: film.writers,
+        release: {
+          date: film.date,
+          'release_country': film.country,
+        },
+      },
+      'user_details': {
+        watchlist: film.isWatchlist,
+        'already_watched': film.isHistory,
+        favorite: film.isFavorites,
+        'watching_date': film.watchingDate,
+      },
+    };
+
+    return adaptedFilm;
   }
 }
