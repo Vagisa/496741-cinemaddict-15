@@ -61,6 +61,9 @@ export default class Filter extends AbstractView {
   }
 
   _menuClickHandler(evt) {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
     evt.preventDefault();
     const currentPage = evt.target.dataset.menuItem;
     this._currentPage = currentPage;
