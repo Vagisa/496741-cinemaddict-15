@@ -1,15 +1,16 @@
 import AbstractView from './abstract';
+import {RankFilmCount} from '../const';
 
 const createRatingTemplate = (films) => {
   const moviesWatched = films.filter((element) => element.isHistory).length;
   let userRank = '';
-  if (moviesWatched === 0) {
+  if (moviesWatched === RankFilmCount.NO_MOVIES) {
     return '';
-  } else if (moviesWatched > 21) {
+  } else if (moviesWatched > RankFilmCount.BUFF) {
     userRank = 'movie buff';
-  } else if (moviesWatched >= 11) {
+  } else if (moviesWatched >= RankFilmCount.FAN) {
     userRank = 'fan';
-  } else if (moviesWatched >= 1) {
+  } else if (moviesWatched >= RankFilmCount.NOVICE) {
     userRank = 'novice';
   }
   return `<section class="header__profile profile">

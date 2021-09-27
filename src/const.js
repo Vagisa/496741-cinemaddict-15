@@ -36,3 +36,10 @@ export const DateRanges = {
   MONTH:    'month',
   YEAR:     'year',
 };
+
+export const RankFilmCount = {
+  NO_MOVIES: 0,
+  BUFF: 21,
+  FAN: 11,
+  NOVICE: 1,
+};
