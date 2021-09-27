@@ -253,16 +253,18 @@ export default class FilmList {
       this._closePopup();
     }
 
-    this._popupComponent = new PopupView(film);
-    render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
-    this._bodyElement.classList.add('hide-overflow');
+    this._api.getComments(film).then((comments) => {
+      this._popupComponent = new PopupView(film, comments);
+      render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
+      this._bodyElement.classList.add('hide-overflow');
 
-    this._popupComponent.setPopupCloseClick(this._closePopup);
-    this._popupComponent.setFavoriteClickHandler((update) => this._handleFavoriteClick(update));
-    this._popupComponent.setWatchlistClickHandler((update) => this._handleWatchlistClick(update));
-    this._popupComponent.setHistoryClickHandler((update) => this._handleHistoryClick(update));
-    this._popupComponent.setAddCommentHandler((update) => this._handleAddNewComment(update));
-    this._popupComponent.setDeleteCommentHandler((update) => this._handleDeleteComment(update));
+      this._popupComponent.setPopupCloseClick(this._closePopup);
+      this._popupComponent.setFavoriteClickHandler((update) => this._handleFavoriteClick(update));
+      this._popupComponent.setWatchlistClickHandler((update) => this._handleWatchlistClick(update));
+      this._popupComponent.setHistoryClickHandler((update) => this._handleHistoryClick(update));
+      this._popupComponent.setAddCommentHandler((update) => this._handleAddNewComment(update, film));
+      this._popupComponent.setDeleteCommentHandler((update) => this._handleDeleteComment(update));
+    });
   }
 
   _closePopup() {
@@ -326,10 +328,11 @@ export default class FilmList {
     );
   }
 
-  _handleAddNewComment(film) {
+  _handleAddNewComment(comment, film) {
     this._handleViewAction(
-      UserAction.UPDATE_FILM,
+      UserAction.ADD_COMMENT,
       UpdateType.MINOR,
+      comment,
       film,
     );
   }

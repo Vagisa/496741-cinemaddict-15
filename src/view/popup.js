@@ -36,7 +36,8 @@ const createPopupCommentsTemplate = (
   comments,
   emotion,
   newText,
-  isComments) => (
+  isComments,
+  commentsArray) => (
   `<section class="film-details__comments-wrap">
     ${isComments ?
     `<h3 class="film-details__comments-title">
@@ -48,7 +49,7 @@ const createPopupCommentsTemplate = (
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
-      ${comments.map((comment) => createCommentTemplate(comment)).join('')}
+      ${commentsArray.map((comment) => createCommentTemplate(comment)).join('')}
     </ul>
 
     <div class="film-details__new-comment">
@@ -85,7 +86,7 @@ const createPopupCommentsTemplate = (
   </section>`
 );
 
-const createPopupTemplate = (data) => {
+const createPopupTemplate = (data, commentsArray) => {
   const {
     title,
     rating,
@@ -107,7 +108,7 @@ const createPopupTemplate = (data) => {
     isComments,
   } = data;
 
-  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newText, isComments);
+  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newText, isComments, commentsArray);
   const releaseDate = dayjs(date).format('D MMMM YYYY');
   const filmDuration = dayjs
     .duration(duration, 'minutes')
@@ -201,9 +202,10 @@ const createPopupTemplate = (data) => {
 };
 
 export default class Popup extends SmartView {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._data = Popup.parseFilmToData(film);
+    this._comments = comments;
 
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._historyClickHandler = this._historyClickHandler.bind(this);
@@ -231,7 +233,7 @@ export default class Popup extends SmartView {
   }
 
   getTemplate() {
-    return createPopupTemplate(this._data);
+    return createPopupTemplate(this._data, this._comments);
   }
 
   restoreHandlers() {
