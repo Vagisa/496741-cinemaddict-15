@@ -1,3 +1,5 @@
+export const FILM_DESCRIPTION_LENGHT = 140;
+
 export const SortType = {
   DEFAULT: 'default',
   DATE: 'date-down',

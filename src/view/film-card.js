@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
+import { FILM_DESCRIPTION_LENGHT } from '../const';
 import AbstractView from './abstract';
 
 dayjs.extend(durationPlugin);
@@ -32,7 +33,9 @@ const createFilmCardTemplate = (film) => {
       <span class="film-card__genre">${genres[0]}</span>
     </p>
     <img src="${poster}" alt="" class="film-card__poster">
-    <p class="film-card__description">${description}</p>
+    <p class="film-card__description">
+      ${description.length > FILM_DESCRIPTION_LENGHT ? `${description.substring(0, FILM_DESCRIPTION_LENGHT)}...` : description}
+    </p>
     <a class="film-card__comments">${comments.length} comments</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item film-card__controls-item--add-to-watchlist
