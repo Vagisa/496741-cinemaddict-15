@@ -58,6 +58,7 @@ export default class FilmList {
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._getCommentsAndOpenPopup = this._getCommentsAndOpenPopup.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._closePopup = this._closePopup.bind(this);
   }
 
@@ -282,6 +283,13 @@ export default class FilmList {
     this._filmPresenter.set(film.id, filmPresenter);
   }
 
+  _onEscKeyDown(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._closePopup();
+    }
+  }
+
   _renderPopup(film, comments, restoreScroll, shake) {
     if (this._popupComponent) {
       this._popupScroll = this._popupComponent._element.scrollTop;
@@ -290,6 +298,7 @@ export default class FilmList {
 
     this._popupComponent = new PopupView(film, comments, shake);
     render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
+    document.addEventListener('keydown', this._onEscKeyDown);
     this._bodyElement.classList.add('hide-overflow');
     if (restoreScroll) {
       this._popupComponent._element.scroll(0, this._popupScroll);
@@ -305,6 +314,7 @@ export default class FilmList {
 
   _closePopup() {
     remove(this._popupComponent);
+    document.removeEventListener('keydown', this._onEscKeyDown);
     this._bodyElement.classList.remove('hide-overflow');
     this._popupComponent = null;
   }

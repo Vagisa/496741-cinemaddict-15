@@ -59,7 +59,6 @@ export default class FilmCard extends AbstractView {
     this._historyClickHandler = this._historyClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._popupOpenClick = this._popupOpenClick.bind(this);
-    this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
   getTemplate() {
@@ -116,17 +115,5 @@ export default class FilmCard extends AbstractView {
           element.addEventListener('click', this._popupOpenClick);
         },
       );
-  }
-
-  _onEscKeyDown(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this._callback.escKeyDown();
-    }
-  }
-
-  setEscKeyDown(callback) {
-    this._callback.escKeyDown = callback;
-    document.addEventListener('keydown', this._onEscKeyDown);
   }
 }
