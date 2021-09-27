@@ -13,8 +13,7 @@ const createCommentTemplate = ({
   comment,
   date,
   emotion,
-},
-isDisabled) => {
+}) => {
   const commentDate = dayjs(date).fromNow();
 
   return `<li class="film-details__comment">
@@ -26,8 +25,7 @@ isDisabled) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-comment-id="${id}"
-        ${isDisabled ? 'disabled' : ''}>
+        <button class="film-details__comment-delete" data-comment-id="${id}">
           Delete
         </button>
       </p>
@@ -53,7 +51,7 @@ const createPopupCommentsTemplate = (
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
-      ${commentsArray.map((comment) => createCommentTemplate(comment, isDisabled)).join('')}
+      ${commentsArray.map((comment) => createCommentTemplate(comment)).join('')}
     </ul>
 
     <div class="film-details__new-comment">
@@ -335,6 +333,7 @@ export default class Popup extends SmartView {
         comment: commentText,
         emotion: this._data.emoji,
       };
+      this.updateData({isDisabled: true});
       this._callback._addComment(comment);
     }
   }
@@ -343,6 +342,7 @@ export default class Popup extends SmartView {
     evt.preventDefault();
     const commentId = evt.target.dataset.commentId;
     evt.target.textContent = 'Deleting...';
+    evt.target.disabled = true;
     this._callback._deleteComment(commentId);
   }
 
