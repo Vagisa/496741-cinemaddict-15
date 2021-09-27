@@ -34,7 +34,6 @@ export default class FilmList {
 
     this._filmPresenter = new Map();
     this._filterType = FilterType.ALL;
-    this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
     this._api = api;
 
@@ -63,6 +62,7 @@ export default class FilmList {
   }
 
   init() {
+    this._currentSortType = SortType.DEFAULT;
     this._renderContent();
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);

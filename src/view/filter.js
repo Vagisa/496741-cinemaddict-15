@@ -1,5 +1,5 @@
 import AbstractView from './abstract';
-import {MenuItem} from '../const';
+import {MenuItem, FilterType} from '../const';
 
 const createFilterTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
@@ -8,7 +8,7 @@ const createFilterTemplate = (filter, currentFilterType) => {
     ${type === currentFilterType ? 'main-navigation__item--active' : ''}"
     data-filter-type="${type}" data-menu-item="${MenuItem.FILMS}">
       ${type}
-      ${type !== 'All movies' ? `<span class="main-navigation__item-count">${count}</span>` : ''}
+      ${type !== FilterType.ALL ? `<span class="main-navigation__item-count">${count}</span>` : ''}
     </a>`);
 };
 
@@ -39,6 +39,16 @@ export default class Filter extends AbstractView {
     return createFiltersTemplate(this._filters, this._currentFilter, this._currentPage);
   }
 
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener('click', this._filterTypeChangeHandler);
+  }
+
+  setMenuClickHandler(callback) {
+    this._callback.menuClick = callback;
+    this.getElement().addEventListener('click', this._menuClickHandler);
+  }
+
   _filterTypeChangeHandler(evt) {
     if (evt.target.tagName !== 'A') {
       return;
@@ -48,16 +58,6 @@ export default class Filter extends AbstractView {
     if (filterType) {
       this._callback.filterTypeChange(filterType);
     }
-  }
-
-  setFilterTypeChangeHandler(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener('click', this._filterTypeChangeHandler);
-  }
-
-  setMenuClickHandler(callback) {
-    this._callback.menuClick = callback;
-    this.getElement().addEventListener('click', this._menuClickHandler);
   }
 
   _menuClickHandler(evt) {

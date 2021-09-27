@@ -118,9 +118,43 @@ export default class Statistics extends SmartView {
     return createStatisticsTemplate(stats, this._data.dateRange);
   }
 
-  updateElement() {
-    super.updateElement();
-    this._setCharts();
+  _getStatsData() {
+    const filmsInDataRange = this._data.films.getFilms()
+      .filter((film) => {
+        const watchingDate = dayjs(film.watchingDate);
+        return (this._data.dateFrom === null || watchingDate.isAfter(this._data.dateFrom))
+        && (!this._data.dateTo || watchingDate.isBefore(this._data.dateTo));
+      });
+    const historyFilms = filmsInDataRange.filter((film) => film.isHistory);
+    const durationMinuts = historyFilms.reduce((sum, film) => sum + film.duration, 0);
+    const genresCounters = {};
+    historyFilms.forEach((film) => {
+      film.genres.forEach((genre) => {
+        if (!(genre in genresCounters)) {
+          genresCounters[genre] = 0;
+        }
+        genresCounters[genre] += 1;
+      });
+    });
+    const favoritGenres = Object.entries(genresCounters).sort((a, b) => b[1] - a[1]);
+    let mostFavoritGenre = '';
+    if (favoritGenres.length) {
+      mostFavoritGenre = favoritGenres[0][0];
+    }
+    return {
+      historyFilmsCount: historyFilms.length,
+      historyFilmsDurationHours: Math.floor(durationMinuts / 60),
+      historyFilmsDurationMinutes: String(durationMinuts % 60).padStart(2, 0),
+      mostFavoritGenre,
+      favoritGenres,
+    };
+  }
+
+  _setCharts() {
+    const statisticCtx = this.getElement().querySelector('.statistic__chart');
+    statisticCtx.height = BAR_HEIGHT * 5;
+    const stats = this._getStatsData();
+    renderStatisticChart(statisticCtx, stats);
   }
 
   _dateChangeHandler([dateFrom, dateTo]) {
@@ -132,12 +166,6 @@ export default class Statistics extends SmartView {
       dateFrom,
       dateTo,
     });
-  }
-
-  restoreHandlers() {
-    this.getElement()
-      .querySelectorAll('.statistic__filters-input')
-      .forEach((el) => el.addEventListener('click', this._handleDateClick));
   }
 
   _handleDateClick(evt) {
@@ -181,42 +209,14 @@ export default class Statistics extends SmartView {
     }
   }
 
-  _setCharts() {
-    const statisticCtx = this.getElement().querySelector('.statistic__chart');
-    statisticCtx.height = BAR_HEIGHT * 5;
-    const stats = this._getStatsData();
-    renderStatisticChart(statisticCtx, stats);
+  updateElement() {
+    super.updateElement();
+    this._setCharts();
   }
 
-  _getStatsData() {
-    const filmsInDataRange = this._data.films.getFilms()
-      .filter((film) => {
-        const watchingDate = dayjs(film.watchingDate);
-        return (this._data.dateFrom === null || watchingDate.isAfter(this._data.dateFrom))
-        && (!this._data.dateTo || watchingDate.isBefore(this._data.dateTo));
-      });
-    const historyFilms = filmsInDataRange.filter((film) => film.isHistory);
-    const durationMinuts = historyFilms.reduce((sum, film) => sum + film.duration, 0);
-    const genresCounters = {};
-    historyFilms.forEach((film) => {
-      film.genres.forEach((genre) => {
-        if (!(genre in genresCounters)) {
-          genresCounters[genre] = 0;
-        }
-        genresCounters[genre] += 1;
-      });
-    });
-    const favoritGenres = Object.entries(genresCounters).sort((a, b) => b[1] - a[1]);
-    let mostFavoritGenre = '';
-    if (favoritGenres.length) {
-      mostFavoritGenre = favoritGenres[0][0];
-    }
-    return {
-      historyFilmsCount: historyFilms.length,
-      historyFilmsDurationHours: Math.floor(durationMinuts / 60),
-      historyFilmsDurationMinutes: String(durationMinuts % 60).padStart(2, 0),
-      mostFavoritGenre,
-      favoritGenres,
-    };
+  restoreHandlers() {
+    this.getElement()
+      .querySelectorAll('.statistic__filters-input')
+      .forEach((el) => el.addEventListener('click', this._handleDateClick));
   }
 }

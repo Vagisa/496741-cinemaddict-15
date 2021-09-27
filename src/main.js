@@ -21,14 +21,14 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
 
-const filmsPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel, api);
+const filmListPresenter = new FilmListPresenter(siteMainElement, filmsModel, filterModel, api);
 let statisticComponent;
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.STATISTICS: {
-      if (filmsPresenter) {
-        filmsPresenter.destroy();
+      if (filmListPresenter) {
+        filmListPresenter.destroy();
       }
       statisticComponent = new StatisticsView(filmsModel);
       render(siteMainElement, statisticComponent, RenderPosition.BEFOREEND);
@@ -38,7 +38,7 @@ const handleSiteMenuClick = (menuItem) => {
       if (statisticComponent) {
         remove(statisticComponent);
       }
-      filmsPresenter.init();
+      filmListPresenter.init();
       break;
   }
 };

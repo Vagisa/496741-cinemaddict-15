@@ -30,15 +30,15 @@ export default class Rating extends SmartView {
     this._filmsModel.addObserver(this._handleFilmsUpdate);
   }
 
+  getTemplate() {
+    return createRatingTemplate(this._data.films);
+  }
+
   _handleFilmsUpdate() {
     this.updateData({films: this._filmsModel.getFilms()});
   }
 
   restoreHandlers() {
     // У нас нет обработчиков в этом компоненте
-  }
-
-  getTemplate() {
-    return createRatingTemplate(this._data.films);
   }
 }
