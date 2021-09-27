@@ -27,7 +27,6 @@ export const FilterType = {
 export const MenuItem = {
   FILMS: 'FILMS',
   STATISTICS: 'STATISTICS',
-
 };
 
 export const DateRanges = {

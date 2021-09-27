@@ -13,7 +13,8 @@ const createCommentTemplate = ({
   comment,
   date,
   emotion,
-}) => {
+},
+isDisabled) => {
   const commentDate = dayjs(date).fromNow();
 
   return `<li class="film-details__comment">
@@ -25,7 +26,10 @@ const createCommentTemplate = ({
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
+        <button class="film-details__comment-delete" data-comment-id="${id}"
+        ${isDisabled ? 'disabled' : ''}>
+          Delete
+        </button>
       </p>
     </div>
   </li>`;
@@ -36,6 +40,8 @@ const createPopupCommentsTemplate = (
   emotion,
   newText,
   isComments,
+  isDisabled,
+  isDeleting,
   commentsArray) => (
   `<section class="film-details__comments-wrap">
     ${isComments ?
@@ -48,7 +54,7 @@ const createPopupCommentsTemplate = (
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
-      ${commentsArray.map((comment) => createCommentTemplate(comment)).join('')}
+      ${commentsArray.map((comment) => createCommentTemplate(comment, isDeleting)).join('')}
     </ul>
 
     <div class="film-details__new-comment">
@@ -57,26 +63,36 @@ const createPopupCommentsTemplate = (
       </div>
 
       <label class="film-details__comment-label">
-        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newText}</textarea>
+        <textarea class="film-details__comment-input"
+        placeholder="Select reaction below and write comment here"
+        name="comment" ${isDisabled ? 'disabled' : ''}>${newText}</textarea>
       </label>
 
       <div class="film-details__emoji-list">
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+        <input class="film-details__emoji-item visually-hidden"
+        name="comment-emoji" type="radio" id="emoji-smile" value="smile"
+        ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-smile">
           <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
         </label>
 
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+        <input class="film-details__emoji-item visually-hidden"
+        name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping"
+        ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-sleeping">
           <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
         </label>
 
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+        <input class="film-details__emoji-item visually-hidden"
+        name="comment-emoji"type="radio" id="emoji-puke" value="puke"
+        ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-puke">
           <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
         </label>
 
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+        <input class="film-details__emoji-item visually-hidden"
+        name="comment-emoji" type="radio" id="emoji-angry" value="angry"
+        ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-angry">
           <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
         </label>
@@ -105,9 +121,19 @@ const createPopupTemplate = (data, commentsArray) => {
     isHistory,
     isFavorites,
     isComments,
+    isDisabled,
+    isDeleting,
   } = data;
 
-  const commentsTemplate = createPopupCommentsTemplate(comments, emojy, newText, isComments, commentsArray);
+  const commentsTemplate = createPopupCommentsTemplate(
+    comments,
+    emojy,
+    newText,
+    isComments,
+    isDisabled,
+    isDeleting,
+    commentsArray,
+  );
   const releaseDate = dayjs(date).format('D MMMM YYYY');
   const filmDuration = dayjs
     .duration(duration, 'minutes')
@@ -285,7 +311,7 @@ export default class Popup extends SmartView {
   _deleteCommentHandler(evt) {
     evt.preventDefault();
     const commentId = evt.target.dataset.commentId;
-
+    evt.target.textContent = 'Deleting...';
     this._callback._deleteComment(commentId);
   }
 
@@ -369,6 +395,7 @@ export default class Popup extends SmartView {
       film,
       {
         isComments: film.comments.length !== 0,
+        isDisabled: false,
         newText: '',
       },
     );

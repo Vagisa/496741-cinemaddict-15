@@ -9,7 +9,12 @@ import NoMoviesTextView from '../view/no-movies.js';
 import FilmPresenter from './film.js';
 import PopupView from '../view/popup.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
-import {SortType, UpdateType, UserAction, FilterType} from '../const.js';
+import {
+  SortType,
+  UpdateType,
+  UserAction,
+  FilterType
+} from '../const.js';
 import {filter} from '../utils/filter.js';
 import dayjs from 'dayjs';
 import FilmsModel from '../model/films.js';

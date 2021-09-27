@@ -78,7 +78,7 @@ const createStatisticsTemplate = (stats, dateRange) => (
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Total duration</h4>
-      <p class="statistic__item-text"> ${stats.historyFilmsDuration.format('HH')} <span class="statistic__item-description">h</span> ${stats.historyFilmsDuration.format('mm')} <span class="statistic__item-description">m</span></p>
+      <p class="statistic__item-text"> ${stats.historyFilmsDurationHours} <span class="statistic__item-description">h</span> ${stats.historyFilmsDurationMinutes} <span class="statistic__item-description">m</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Top genre</h4>
@@ -190,7 +190,11 @@ export default class Statistics extends SmartView {
 
   _getStatsData() {
     const filmsInDataRange = this._data.films.getFilms()
-      .filter((film) => (!this._data.dateFrom || film.date >= this._data.dateFrom) && (!this._data.dateTo || film.date <= this._data.dateTo));
+      .filter((film) => {
+        const watchingDate = dayjs(film.watchingDate);
+        return (this._data.dateFrom === null || watchingDate.isAfter(this._data.dateFrom))
+        && (!this._data.dateTo || watchingDate.isBefore(this._data.dateTo));
+      });
     const historyFilms = filmsInDataRange.filter((film) => film.isHistory);
     const durationMinuts = historyFilms.reduce((sum, film) => sum + film.duration, 0);
     const genresCounters = {};
@@ -203,13 +207,14 @@ export default class Statistics extends SmartView {
       });
     });
     const favoritGenres = Object.entries(genresCounters).sort((a, b) => b[1] - a[1]);
-    let mostFavoritGenre = 'Not known';
+    let mostFavoritGenre = '';
     if (favoritGenres.length) {
       mostFavoritGenre = favoritGenres[0][0];
     }
     return {
       historyFilmsCount: historyFilms.length,
-      historyFilmsDuration: dayjs.duration(durationMinuts, 'minutes'),
+      historyFilmsDurationHours: Math.floor(durationMinuts / 60),
+      historyFilmsDurationMinutes: durationMinuts % 60 * 60,
       mostFavoritGenre,
       favoritGenres,
     };
