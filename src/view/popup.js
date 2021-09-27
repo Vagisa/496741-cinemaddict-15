@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import he from 'he';
-import {nanoid} from 'nanoid';
 
 dayjs.extend(durationPlugin);
 dayjs.extend(relativeTime);
@@ -270,21 +269,10 @@ export default class Popup extends SmartView {
       const commentText = he.escape(evt.target.value);
       evt.preventDefault();
       const comment = {
-        id: nanoid(),
-        author: 'User',
         comment: commentText,
-        date: dayjs().toISOString(),
         emotion: this._data.emojy,
       };
-      this.updateData({
-        comments: [
-          ...this._data.comments,
-          comment,
-        ],
-        emojy: undefined,
-        newText: '',
-      });
-      this._callback._addComment(Popup.parseDataToFilm(this._data));
+      this._callback._addComment(comment);
     }
   }
 
@@ -297,16 +285,8 @@ export default class Popup extends SmartView {
   _deleteCommentHandler(evt) {
     evt.preventDefault();
     const commentId = evt.target.dataset.commentId;
-    const index = this._data.comments
-      .findIndex((comment) => comment.id === commentId);
 
-    const comments = [
-      ...this._data.comments.slice(0, index),
-      ...this._data.comments.slice(index + 1),
-    ];
-
-    this.updateData({comments});
-    this._callback._deleteComment(Popup.parseDataToFilm(this._data));
+    this._callback._deleteComment(commentId);
   }
 
   setDeleteCommentHandler(callback) {

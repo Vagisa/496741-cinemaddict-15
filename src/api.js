@@ -29,9 +29,9 @@ export default class Api {
       .then(Api.toJSON);
   }
 
-  updateFIlm(film) {
+  updateFilm(film) {
     return this._load({
-      url: `film/${film.id}`,
+      url: `movies/${film.id}`,
       method: Method.PUT,
       body: JSON.stringify(FilmsModel.adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -50,11 +50,10 @@ export default class Api {
       .then(Api.toJSON);
   }
 
-  deleteComment(comment){
+  deleteComment(commentId){
     return this._load({
-      url: `comments/${comment.id}`,
+      url: `comments/${commentId}`,
       method: Method.DELETE,
-      body: JSON.stringify(comment),
     });
   }
 

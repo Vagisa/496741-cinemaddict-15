@@ -37,6 +37,8 @@ export default class Films extends AbstractObserver {
       id: film.id,
       comments: film.comments,
       title: film['film_info'].title,
+      'alternative_title': film['film_info']['alternative_title'],
+      'age_rating': film['film_info']['age_rating'],
       rating: film['film_info']['total_rating'],
       date: film['film_info'].release.date,
       duration: film['film_info'].runtime,
@@ -62,6 +64,8 @@ export default class Films extends AbstractObserver {
       comments: film.comments,
       'film_info': {
         title: film.title,
+        'alternative_title': film['alternative_title'],
+        'age_rating': film['age_rating'],
         'total_rating': film.rating,
         runtime: film.duration,
         genre: film.genres,
