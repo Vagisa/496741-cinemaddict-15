@@ -259,12 +259,12 @@ export default class FilmList {
     render(this._contentComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
     render(this._filmsListComponent, this._filmsContainerComponent, RenderPosition.BEFOREEND);
 
-    const topRatedFilms = this._filmsModel.getFilms()
+    const topRatedFilms = this._filmsModel.getFilms().slice()
       .sort((first, second) => (second.rating - first.rating))
       .slice(0, NUMBER_TOP_RATED);
     this._renderFilmListExtra(topRatedFilms, 'Top rated');
 
-    const mostCommentedFilms = this._filmsModel.getFilms()
+    const mostCommentedFilms = this._filmsModel.getFilms().slice()
       .sort((first, second) => (second.comments.length - first.comments.length))
       .slice(0, NUMBER_MOST_COMMENTED);
     this._renderFilmListExtra(mostCommentedFilms, 'Most commented');
