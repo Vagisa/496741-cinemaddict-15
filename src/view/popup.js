@@ -41,7 +41,6 @@ const createPopupCommentsTemplate = (
   newText,
   isComments,
   isDisabled,
-  isDeleting,
   commentsArray) => (
   `<section class="film-details__comments-wrap">
     ${isComments ?
@@ -54,7 +53,7 @@ const createPopupCommentsTemplate = (
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
-      ${commentsArray.map((comment) => createCommentTemplate(comment, isDeleting)).join('')}
+      ${commentsArray.map((comment) => createCommentTemplate(comment)).join('')}
     </ul>
 
     <div class="film-details__new-comment">
@@ -101,7 +100,7 @@ const createPopupCommentsTemplate = (
   </section>`
 );
 
-const createPopupTemplate = (data, commentsArray) => {
+const createPopupTemplate = (data, commentsArray, shake) => {
   const {
     title,
     rating,
@@ -122,7 +121,6 @@ const createPopupTemplate = (data, commentsArray) => {
     isFavorites,
     isComments,
     isDisabled,
-    isDeleting,
   } = data;
 
   const commentsTemplate = createPopupCommentsTemplate(
@@ -131,7 +129,6 @@ const createPopupTemplate = (data, commentsArray) => {
     newText,
     isComments,
     isDisabled,
-    isDeleting,
     commentsArray,
   );
   const releaseDate = dayjs(date).format('D MMMM YYYY');
@@ -140,7 +137,7 @@ const createPopupTemplate = (data, commentsArray) => {
     .format('H[h] mm[m]');
 
   return `<section class="film-details">
-    <form class="film-details__inner" action="" method="get">
+    <form class="film-details__inner ${shake? 'shake' : ''}" action="" method="get">
       <div class="film-details__top-container">
         <div class="film-details__close">
           <button class="film-details__close-btn" type="button">close</button>
@@ -227,10 +224,11 @@ const createPopupTemplate = (data, commentsArray) => {
 };
 
 export default class Popup extends SmartView {
-  constructor(film, comments) {
+  constructor(film, comments, shake) {
     super();
     this._data = Popup.parseFilmToData(film);
     this._comments = comments;
+    this._shake = shake;
 
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._historyClickHandler = this._historyClickHandler.bind(this);
@@ -258,7 +256,9 @@ export default class Popup extends SmartView {
   }
 
   getTemplate() {
-    return createPopupTemplate(this._data, this._comments);
+    const shake = this._shake;
+    this._shake = false;
+    return createPopupTemplate(this._data, this._comments, shake);
   }
 
   restoreHandlers() {

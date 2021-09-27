@@ -33,9 +33,6 @@ export default class Filter {
     });
     this._filterComponent.setMenuClickHandler((page) => {
       if (page !== this._currentPage) {
-        if (page === undefined || this._currentPage === undefined) {
-          console.log(123);
-        }
         this._menuClickHandler(page);
         this._currentPage = page;
         this.init();

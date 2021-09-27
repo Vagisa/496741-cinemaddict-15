@@ -29,6 +29,7 @@ export default class FilmList {
     this._filterModel = filterModel;
     this._contentContainer = contentContainer;
     this._renderedFilmsCount = NUMBER_MOVIES_PER_STEP;
+    this._comments = [];
     this._bodyElement = document.querySelector('body');
 
     this._filmPresenter = new Map();
@@ -56,7 +57,7 @@ export default class FilmList {
     this._handleHistoryClick = this._handleHistoryClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._handleOpenPopupClick = this._handleOpenPopupClick.bind(this);
+    this._getCommentsAndOpenPopup = this._getCommentsAndOpenPopup.bind(this);
     this._closePopup = this._closePopup.bind(this);
   }
 
@@ -93,9 +94,13 @@ export default class FilmList {
   _handleViewAction(actionType, updateType, update, film) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
-        });
+        this._api.updateFilm(update)
+          .then((response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch(() => {
+            this._renderPopup(update, this._comments, true, true);
+          });
         break;
       case UserAction.ADD_COMMENT:
         this._api.addComment(update, film)
@@ -105,23 +110,30 @@ export default class FilmList {
               updateType,
               updatedFilm,
             );
-            this._renderPopup(updatedFilm, comments, true);
+            this._comments = comments;
+            this._renderPopup(updatedFilm, comments, true, false);
+          })
+          .catch(() => {
+            this._renderPopup(film, this._comments, true, true);
           });
         break;
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(update).then(() => {
-          const updatedFilm = {
-            ...film,
-            comments: film.comments.filter((commentId) => commentId !== update),
-          };
-          this._filmsModel.updateFilm(
-            updateType,
-            updatedFilm,
-          );
-          this._api.getComments(film).then((comments) => {
-            this._renderPopup(updatedFilm, comments, true);
+        this._api.deleteComment(update)
+          .then(() => {
+            const updatedFilm = {
+              ...film,
+              comments: film.comments.filter((commentId) => commentId !== update),
+            };
+            this._filmsModel.updateFilm(
+              updateType,
+              updatedFilm,
+            );
+            this._comments = this._comments.filter((comment) => comment.id !== update);
+            this._renderPopup(film, this._comments, true, false);
+          })
+          .catch(() => {
+            this._renderPopup(film, this._comments, true, true);
           });
-        });
         break;
     }
   }
@@ -260,9 +272,10 @@ export default class FilmList {
     this._renderFilmListExtra(mostCommentedFilms, 'Most commented');
   }
 
-  _handleOpenPopupClick(film) {
+  _getCommentsAndOpenPopup(film, restoreScroll, shake) {
     this._api.getComments(film).then((comments) => {
-      this._renderPopup(film, comments);
+      this._comments = comments;
+      this._renderPopup(film, comments, restoreScroll, shake);
     });
   }
 
@@ -270,20 +283,20 @@ export default class FilmList {
     const filmPresenter = new FilmPresenter(
       container,
       this._handleViewAction,
-      this._handleOpenPopupClick,
+      this._getCommentsAndOpenPopup,
       this._closePopup,
     );
     filmPresenter.init(film);
     this._filmPresenter.set(film.id, filmPresenter);
   }
 
-  _renderPopup(film, comments, restoreScroll) {
+  _renderPopup(film, comments, restoreScroll, shake) {
     if (this._popupComponent) {
       this._popupScroll = this._popupComponent._element.scrollTop;
       this._closePopup();
     }
 
-    this._popupComponent = new PopupView(film, comments);
+    this._popupComponent = new PopupView(film, comments, shake);
     render(this._bodyElement, this._popupComponent, RenderPosition.BEFOREEND);
     this._bodyElement.classList.add('hide-overflow');
     if (restoreScroll) {
