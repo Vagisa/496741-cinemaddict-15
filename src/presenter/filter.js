@@ -10,7 +10,6 @@ export default class Filter {
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
     this._menuClickHandler = menuClickHandler;
-    this._currentFilterType = FilterType.ALL;
     this._currentPage = MenuItem.FILMS;
 
     this._filterComponent = null;
@@ -81,9 +80,9 @@ export default class Filter {
         count: filter[FilterType.WATCHLIST](films).length,
       },
       {
-        type: FilterType.HISTTORY,
+        type: FilterType.HISTORY,
         name: 'History',
-        count: filter[FilterType.HISTTORY](films).length,
+        count: filter[FilterType.HISTORY](films).length,
       },
 
     ];

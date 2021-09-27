@@ -20,7 +20,7 @@ export default class Films extends AbstractObserver {
     const index = this._films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update unexisting film');
+      throw new Error('Can\'t update not existing film');
     }
 
     this._films = [
@@ -33,7 +33,7 @@ export default class Films extends AbstractObserver {
   }
 
   static adaptToClient(film) {
-    const adaptedFilm = {
+    return {
       id: film.id,
       comments: film.comments,
       title: film['film_info'].title,
@@ -54,12 +54,10 @@ export default class Films extends AbstractObserver {
       isFavorites: film['user_details'].favorite,
       watchingDate: film['user_details']['watching_date'],
     };
-
-    return adaptedFilm;
   }
 
   static adaptToServer(film) {
-    const adaptedFilm = {
+    return {
       id: film.id,
       comments: film.comments,
       'film_info': {
@@ -86,7 +84,5 @@ export default class Films extends AbstractObserver {
         'watching_date': film.watchingDate,
       },
     };
-
-    return adaptedFilm;
   }
 }

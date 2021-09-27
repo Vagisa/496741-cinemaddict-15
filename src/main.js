@@ -1,4 +1,4 @@
-import RatingView from './view/user-rank.js';
+import RatingView from './view/rating.js';
 import StatisticsView from './view/statistics.js';
 import NumberFilmsView from './view/number-films.js';
 import FilmListPresenter from './presenter/film-list.js';

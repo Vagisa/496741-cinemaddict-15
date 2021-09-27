@@ -33,10 +33,14 @@ export const replace = (newChild, oldChild) => {
     newChild = newChild.getElement();
   }
 
+  if (oldChild === null || newChild === null) {
+    throw new Error('Can\'t replace not existing elements');
+  }
+
   const parent = oldChild.parentElement;
 
-  if (parent === null || oldChild === null || newChild === null) {
-    throw new Error('Can\'t replace unexisting elements');
+  if (parent === null) {
+    throw new Error('Can\'t replace not existing elements');
   }
 
   parent.replaceChild(newChild, oldChild);

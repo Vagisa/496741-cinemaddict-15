@@ -1,4 +1,4 @@
-import FilmCardView from '../view/film-card-view.js';
+import FilmCardView from '../view/film-card.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
@@ -23,7 +23,7 @@ export default class Film {
   init(film) {
     this._film = film;
 
-    const prevfilmComponent = this._filmComponent;
+    const prevFilmComponent = this._filmComponent;
     this._filmComponent = new FilmCardView(this._film);
     this._filmComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmComponent.setHistoryClickHandler(this._handleHistoryClick);
@@ -31,16 +31,16 @@ export default class Film {
     this._filmComponent.setPopupOpenClick(() => this._popupOpen(this._film));
     this._filmComponent.setEscKeyDown(() => this._popupClose(this._film));
 
-    if (prevfilmComponent === null) {
+    if (prevFilmComponent === null) {
       render(this._filmContainer, this._filmComponent, RenderPosition.BEFOREEND);
       return;
     }
 
-    if (this._filmContainer.getElement().contains(prevfilmComponent.getElement())) {
-      replace(this._filmComponent, prevfilmComponent);
+    if (this._filmContainer.getElement().contains(prevFilmComponent.getElement())) {
+      replace(this._filmComponent, prevFilmComponent);
     }
 
-    remove(prevfilmComponent);
+    remove(prevFilmComponent);
   }
 
   destroy() {

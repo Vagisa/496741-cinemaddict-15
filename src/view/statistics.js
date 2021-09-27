@@ -185,7 +185,7 @@ export default class Statistics extends SmartView {
     const statisticCtx = this.getElement().querySelector('.statistic__chart');
     statisticCtx.height = BAR_HEIGHT * 5;
     const stats = this._getStatsData();
-    this._statisticChart = renderStatisticChart(statisticCtx, stats);
+    renderStatisticChart(statisticCtx, stats);
   }
 
   _getStatsData() {

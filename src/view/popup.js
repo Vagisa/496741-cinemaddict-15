@@ -53,7 +53,7 @@ const createPopupCommentsTemplate = (
 
     <ul class="film-details__comments-list">
       <!--Здесь будут комментарии-->
-      ${commentsArray.map((comment) => createCommentTemplate(comment)).join('')}
+      ${commentsArray.map((comment) => createCommentTemplate(comment, isDisabled)).join('')}
     </ul>
 
     <div class="film-details__new-comment">
@@ -115,7 +115,7 @@ const createPopupTemplate = (data, commentsArray, shake) => {
     writers,
     newText,
     comments,
-    emojy,
+    emoji,
     isWatchlist,
     isHistory,
     isFavorites,
@@ -125,7 +125,7 @@ const createPopupTemplate = (data, commentsArray, shake) => {
 
   const commentsTemplate = createPopupCommentsTemplate(
     comments,
-    emojy,
+    emoji,
     newText,
     isComments,
     isDisabled,
@@ -249,12 +249,6 @@ export default class Popup extends SmartView {
     this._element.scroll(0, scroll);
   }
 
-  reset(film) {
-    this.updateData(
-      Popup.parseFilmToData(film),
-    );
-  }
-
   getTemplate() {
     const shake = this._shake;
     this._shake = false;
@@ -286,17 +280,17 @@ export default class Popup extends SmartView {
   _emojiSelectionHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      emojy: evt.target.value,
+      emoji: evt.target.value,
     });
   }
 
   _addNewCommentHandler(evt) {
-    if (evt.ctrlKey && evt.key === 'Enter') {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key === 'Enter') {
       const commentText = he.escape(evt.target.value);
       evt.preventDefault();
       const comment = {
         comment: commentText,
-        emotion: this._data.emojy,
+        emotion: this._data.emoji,
       };
       this._callback._addComment(comment);
     }
@@ -409,7 +403,7 @@ export default class Popup extends SmartView {
     }
 
     delete data.isComments;
-    delete data.emojy;
+    delete data.emoji;
     delete data.newText;
     return data;
   }
