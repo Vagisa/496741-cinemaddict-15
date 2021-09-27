@@ -100,7 +100,14 @@ const createPopupCommentsTemplate = (
   </section>`
 );
 
-const createPopupTemplate = (data, commentsArray, shake) => {
+const createPopupTemplate = (data, film, commentsArray, shake) => {
+  const {
+    newText,
+    emoji,
+    isComments,
+    isDisabled,
+  } = data;
+
   const {
     title,
     rating,
@@ -113,15 +120,11 @@ const createPopupTemplate = (data, commentsArray, shake) => {
     actors,
     director,
     writers,
-    newText,
     comments,
-    emoji,
     isWatchlist,
     isHistory,
     isFavorites,
-    isComments,
-    isDisabled,
-  } = data;
+  } = film;
 
   const commentsTemplate = createPopupCommentsTemplate(
     comments,
@@ -226,7 +229,12 @@ const createPopupTemplate = (data, commentsArray, shake) => {
 export default class Popup extends SmartView {
   constructor(film, comments, shake) {
     super();
-    this._data = Popup.parseFilmToData(film);
+    this._data = {
+      isComments: film.comments.length !== 0,
+      isDisabled: false,
+      newText: '',
+    };
+    this._film = film;
     this._comments = comments;
     this._shake = shake;
 
@@ -252,7 +260,7 @@ export default class Popup extends SmartView {
   getTemplate() {
     const shake = this._shake;
     this._shake = false;
-    return createPopupTemplate(this._data, this._comments, shake);
+    return createPopupTemplate(this._data, this._film, this._comments, shake);
   }
 
   restoreHandlers() {
@@ -317,20 +325,17 @@ export default class Popup extends SmartView {
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback._favoriteClick(this._data);
-    this.updateData({isFavorites: !this._data.isFavorites});
+    this._callback._favoriteClick(this._film);
   }
 
   _historyClickHandler(evt) {
     evt.preventDefault();
-    this._callback._historyClick(this._data);
-    this.updateData({isHistory: !this._data.isHistory});
+    this._callback._historyClick(this._film);
   }
 
   _watchlistClickHandler(evt) {
     evt.preventDefault();
-    this._callback._watchlistClick(this._data);
-    this.updateData({isWatchlist: !this._data.isWatchlist});
+    this._callback._watchlistClick(this._film);
   }
 
   _popupCloseClick(evt) {
@@ -375,36 +380,11 @@ export default class Popup extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(Popup.parseDataToFilm(this._data));
+    this._callback.formSubmit(this._film);
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
-  }
-
-  static parseFilmToData(film) {
-    return Object.assign(
-      {},
-      film,
-      {
-        isComments: film.comments.length !== 0,
-        isDisabled: false,
-        newText: '',
-      },
-    );
-  }
-
-  static parseDataToFilm(data) {
-    data = Object.assign({}, data);
-
-    if (!data.isComments) {
-      data.comments = [];
-    }
-
-    delete data.isComments;
-    delete data.emoji;
-    delete data.newText;
-    return data;
   }
 }

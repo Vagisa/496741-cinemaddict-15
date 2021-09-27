@@ -98,10 +98,13 @@ export default class FilmList {
         this._api.updateFilm(update)
           .then((response) => {
             this._filmsModel.updateFilm(updateType, response);
+            if (this._popupComponent) {
+              this._renderPopup(update, this._comments, true, false);
+            }
           })
           .catch(() => {
             if (this._popupComponent) {
-              this._renderPopup(update, this._comments, true, true);
+              this._renderPopup(film, this._comments, true, true);
             }
           });
         break;
@@ -132,7 +135,7 @@ export default class FilmList {
               updatedFilm,
             );
             this._comments = this._comments.filter((comment) => comment.id !== update);
-            this._renderPopup(film, this._comments, true, false);
+            this._renderPopup(updatedFilm, this._comments, true, false);
           })
           .catch(() => {
             this._renderPopup(film, this._comments, true, true);
@@ -307,9 +310,9 @@ export default class FilmList {
     }
 
     this._popupComponent.setPopupCloseClick(this._closePopup);
-    this._popupComponent.setFavoriteClickHandler((update) => this._handleFavoriteClick(update));
-    this._popupComponent.setWatchlistClickHandler((update) => this._handleWatchlistClick(update));
-    this._popupComponent.setHistoryClickHandler((update) => this._handleHistoryClick(update));
+    this._popupComponent.setFavoriteClickHandler((update) => this._handleFavoriteClick(update, film));
+    this._popupComponent.setWatchlistClickHandler((update) => this._handleWatchlistClick(update, film));
+    this._popupComponent.setHistoryClickHandler((update) => this._handleHistoryClick(update, film));
     this._popupComponent.setAddCommentHandler((update) => this._handleAddNewComment(update, film));
     this._popupComponent.setDeleteCommentHandler((update) => this._handleDeleteComment(update, film));
   }
@@ -352,27 +355,30 @@ export default class FilmList {
     this._renderFilms(films, filmsExtraContainerComponent);
   }
 
-  _handleFavoriteClick(film) {
+  _handleFavoriteClick(update, film) {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
       UpdateType.MAJOR,
-      Object.assign({}, film, {isFavorites: !film.isFavorites}),
+      Object.assign({}, update, {isFavorites: !film.isFavorites}),
+      film,
     );
   }
 
-  _handleHistoryClick(film) {
+  _handleHistoryClick(update, film) {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      Object.assign({}, film, {isHistory: !film.isHistory}),
+      Object.assign({}, update, {isHistory: !film.isHistory}),
+      film,
     );
   }
 
-  _handleWatchlistClick(film) {
+  _handleWatchlistClick(update, film) {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      Object.assign({}, film, {isWatchlist: !film.isWatchlist}),
+      Object.assign({}, update, {isWatchlist: !film.isWatchlist}),
+      film,
     );
   }
 
