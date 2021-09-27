@@ -214,7 +214,7 @@ export default class Statistics extends SmartView {
     return {
       historyFilmsCount: historyFilms.length,
       historyFilmsDurationHours: Math.floor(durationMinuts / 60),
-      historyFilmsDurationMinutes: durationMinuts % 60 * 60,
+      historyFilmsDurationMinutes: String(durationMinuts % 60).padStart(2, 0),
       mostFavoritGenre,
       favoritGenres,
     };
