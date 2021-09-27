@@ -5,9 +5,9 @@ import dayjs from 'dayjs';
 import dayjsDurationPlugin from 'dayjs/plugin/duration';
 import { DateRanges } from '../const';
 
-dayjs.extend(dayjsDurationPlugin);
-
 const BAR_HEIGHT = 50;
+
+dayjs.extend(dayjsDurationPlugin);
 
 const renderStatisticChart = (statisticCtx, stats) => (
   new Chart(statisticCtx, {
