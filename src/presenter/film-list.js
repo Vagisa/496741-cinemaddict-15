@@ -100,7 +100,9 @@ export default class FilmList {
             this._filmsModel.updateFilm(updateType, response);
           })
           .catch(() => {
-            this._renderPopup(update, this._comments, true, true);
+            if (this._popupComponent) {
+              this._renderPopup(update, this._comments, true, true);
+            }
           });
         break;
       case UserAction.ADD_COMMENT:

@@ -1,11 +1,11 @@
-import AbstractView from './abstract';
-import {RankFilmCount} from '../const';
+import SmartView from './smart.js';
+import {RankFilmCount} from '../const.js';
 
 const createRatingTemplate = (films) => {
   const moviesWatched = films.filter((element) => element.isHistory).length;
   let userRank = '';
   if (moviesWatched === RankFilmCount.NO_MOVIES) {
-    return '';
+    userRank = '';
   } else if (moviesWatched > RankFilmCount.BUFF) {
     userRank = 'movie buff';
   } else if (moviesWatched >= RankFilmCount.FAN) {
@@ -19,13 +19,26 @@ const createRatingTemplate = (films) => {
   </section>`;
 };
 
-export default class Rating extends AbstractView {
+export default class Rating extends SmartView {
   constructor(filmsModel) {
     super();
-    this._filmsModel = filmsModel.getFilms();
+    this._data = {films: filmsModel.getFilms()};
+    this._filmsModel = filmsModel;
+
+    this._handleFilmsUpdate = this._handleFilmsUpdate.bind(this);
+
+    this._filmsModel.addObserver(this._handleFilmsUpdate);
+  }
+
+  _handleFilmsUpdate() {
+    this.updateData({films: this._filmsModel.getFilms()});
+  }
+
+  restoreHandlers() {
+    // У нас нет обработчиков в этом компоненте
   }
 
   getTemplate() {
-    return createRatingTemplate(this._filmsModel);
+    return createRatingTemplate(this._data.films);
   }
 }
