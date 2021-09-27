@@ -44,12 +44,12 @@ const renderStatisticChart = (statisticCtx, stats) => (
 );
 
 
-const createStatisticsTemplate = (stats, dateRange) => (
+const createStatisticsTemplate = (stats, dateRange, userRank) => (
   `<section class="statistic">
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">Movie buff</span>
+    <span class="statistic__rank-label">${userRank}</span>
   </p>
 
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -93,11 +93,12 @@ const createStatisticsTemplate = (stats, dateRange) => (
 </section>`);
 
 export default class Statistics extends SmartView {
-  constructor(films) {
+  constructor(filmsModel) {
     super();
 
     this._data = {
-      films,
+      filmsModel: filmsModel,
+      userRank: filmsModel.getUserRank(),
       dateFrom: null,
       dateTo: null,
       dateRange: DateRanges.ALL_TIME,
@@ -109,17 +110,21 @@ export default class Statistics extends SmartView {
     this._handleDateClick = this._handleDateClick.bind(this);
 
     this._setCharts();
-    films.addObserver(this.updateElement);
+    filmsModel.addObserver(this.updateElement);
     this.restoreHandlers();
   }
 
   getTemplate() {
     const stats = this._getStatsData();
-    return createStatisticsTemplate(stats, this._data.dateRange);
+    return createStatisticsTemplate(
+      stats,
+      this._data.dateRange,
+      this._data.userRank,
+    );
   }
 
   _getStatsData() {
-    const filmsInDataRange = this._data.films.getFilms()
+    const filmsInDataRange = this._data.filmsModel.getFilms()
       .filter((film) => {
         const watchingDate = dayjs(film.watchingDate);
         return (this._data.dateFrom === null || watchingDate.isAfter(this._data.dateFrom))

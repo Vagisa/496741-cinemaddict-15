@@ -1,4 +1,5 @@
 import AbstractObserver from '../utils/abstract-observer.js';
+import {RankFilmCount} from '../const.js';
 
 export default class Films extends AbstractObserver {
   constructor() {
@@ -10,6 +11,19 @@ export default class Films extends AbstractObserver {
     this._films = films.slice();
 
     this._notify(updateType);
+  }
+
+  getUserRank() {
+    const moviesWatched = this._films.filter((element) => element.isHistory).length;
+    if (moviesWatched === RankFilmCount.NO_MOVIES) {
+      return '';
+    } else if (moviesWatched > RankFilmCount.BUFF) {
+      return 'movie buff';
+    } else if (moviesWatched >= RankFilmCount.FAN) {
+      return 'fan';
+    } else if (moviesWatched >= RankFilmCount.NOVICE) {
+      return 'novice';
+    }
   }
 
   getFilms() {
@@ -37,8 +51,8 @@ export default class Films extends AbstractObserver {
       id: film.id,
       comments: film.comments,
       title: film['film_info'].title,
-      'alternative_title': film['film_info']['alternative_title'],
-      'age_rating': film['film_info']['age_rating'],
+      alternativeTitle: film['film_info']['alternative_title'],
+      ageRating: film['film_info']['age_rating'],
       rating: film['film_info']['total_rating'],
       date: film['film_info'].release.date,
       duration: film['film_info'].runtime,
@@ -62,8 +76,8 @@ export default class Films extends AbstractObserver {
       comments: film.comments,
       'film_info': {
         title: film.title,
-        'alternative_title': film['alternative_title'],
-        'age_rating': film['age_rating'],
+        'alternative_title': film.alternativeTitle,
+        'age_rating': film.ageRating,
         'total_rating': film.rating,
         runtime: film.duration,
         genre: film.genres,
